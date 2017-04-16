@@ -1,0 +1,241 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<CheckButton name="FavoriteContactsEditContactButtonTemplate" inherits="SimplePopupButtonTemplate" virtual="true">
+		<NormalTexture name="$parentIcon" nonBlocking="true">
+			<Size x="36" y="36"/>
+			<Anchors>
+				<Anchor point="CENTER" x="0" y="-1"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture alphaMode="ADD" file="Interface\Buttons\ButtonHilight-Square"/>
+		<CheckedTexture alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight"/>
+	</CheckButton>
+	<Frame name="FavoriteContactsEditContactPopup" toplevel="true" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+		<Size x="297" y="328"/>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture file="Interface\MacroFrame\MacroPopup-TopLeft">
+					<Size x="256" y="286"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MacroFrame\MacroPopup-TopRight">
+					<Size x="64" y="286"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="256" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MacroFrame\MacroPopup-BotLeft">
+					<Size x="256" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-286"/>
+					</Anchors>
+				</Texture>
+				<Texture file="Interface\MacroFrame\MacroPopup-BotRight">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="256" y="-286"/>
+					</Anchors>
+				</Texture>
+				<FontString name="$parentContactNameLabel" inherits="GameFontHighlightSmall" text="">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="24" y="-21"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontHighlightSmall" text="MACRO_POPUP_CHOOSE_ICON">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="24" y="-74"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<EditBox name="$parentContactNameEditBox" historyLines="0">
+				<Size x="182" y="20"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="29" y="-35"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentNameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size x="12" y="29"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-11" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentNameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size x="175" y="29"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNameLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentNameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size x="12" y="29"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNameMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+            <EditBox name="$parentIconName" historyLines="0">
+				<Size x="182" y="20"/>
+				<Anchors>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-86" y="-87"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentNameLeft" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size x="12" y="29"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-11" y="0"/>
+							</Anchors>
+							<TexCoords left="0" right="0.09375" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentNameMiddle" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size x="175" y="29"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNameLeft" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.09375" right="0.90625" top="0" bottom="1.0"/>
+						</Texture>
+						<Texture name="$parentNameRight" file="Interface\ClassTrainerFrame\UI-ClassTrainer-FilterBorder">
+							<Size x="12" y="29"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeTo="$parentNameMiddle" relativePoint="RIGHT"/>
+							</Anchors>
+							<TexCoords left="0.90625" right="1.0" top="0" bottom="1.0"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<FontString inherits="ChatFontNormal"/>
+			</EditBox>
+			<ScrollFrame name="$parentScrollFrame" inherits="ListScrollFrameTemplate">
+				<Size x="296" y="220"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT" x="-39" y="-72"/>
+				</Anchors>
+			</ScrollFrame>
+			<CheckButton name="$parentButton1" inherits="FavoriteContactsEditContactButtonTemplate" id="1">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="24" y="-115"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton2" inherits="FavoriteContactsEditContactButtonTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton1" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton3" inherits="FavoriteContactsEditContactButtonTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton2" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton4" inherits="FavoriteContactsEditContactButtonTemplate" id="4">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton3" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton5" inherits="FavoriteContactsEditContactButtonTemplate" id="5">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton4" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton6" inherits="FavoriteContactsEditContactButtonTemplate" id="6">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButton1" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton7" inherits="FavoriteContactsEditContactButtonTemplate" id="7">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton6" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton8" inherits="FavoriteContactsEditContactButtonTemplate" id="8">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton7" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton9" inherits="FavoriteContactsEditContactButtonTemplate" id="9">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton8" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton10" inherits="FavoriteContactsEditContactButtonTemplate" id="10">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton9" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton11" inherits="FavoriteContactsEditContactButtonTemplate" id="11">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButton6" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton12" inherits="FavoriteContactsEditContactButtonTemplate" id="12">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton11" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton13" inherits="FavoriteContactsEditContactButtonTemplate" id="13">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton12" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton14" inherits="FavoriteContactsEditContactButtonTemplate" id="14">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton13" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton15" inherits="FavoriteContactsEditContactButtonTemplate" id="15">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton14" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton16" inherits="FavoriteContactsEditContactButtonTemplate" id="16">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentButton11" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton17" inherits="FavoriteContactsEditContactButtonTemplate" id="17">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton16" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton18" inherits="FavoriteContactsEditContactButtonTemplate" id="18">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton17" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton19" inherits="FavoriteContactsEditContactButtonTemplate" id="19">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton18" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="$parentButton20" inherits="FavoriteContactsEditContactButtonTemplate" id="20">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton19" relativePoint="RIGHT" x="10" y="0"/>
+				</Anchors>
+			</CheckButton>
+			<Button name="$parentCancelButton" inherits="UIPanelButtonTemplate" text="CANCEL">
+				<Size x="78" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="-11" y="13"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentOkayButton" inherits="UIPanelButtonTemplate" text="OKAY">
+				<Size x="78" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentCancelButton" relativePoint="LEFT" x="-2" y="0"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

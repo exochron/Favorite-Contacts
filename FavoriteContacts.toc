@@ -1,0 +1,11 @@
+## Interface: 70200
+## Title: Favorite Contacts
+## Notes: Adds buttons to mailbox for easy access to your favorite contacts
+## Author: lqpbgjuc
+## Version: 1.1.7
+## SavedVariables: FavoriteContactsSettings
+
+CoreFramework\CoreFramework.xml
+Locals\Locals.xml
+FavoriteContacts.xml
+FavoriteContacts.lua
