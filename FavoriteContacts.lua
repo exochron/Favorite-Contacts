@@ -251,9 +251,14 @@ function private:UpdateContactButton(index)
             contact.icon = icon;
         end
 
-        button.icon:SetTexture("INTERFACE\\ICONS\\" .. icon);
+        if (icon:sub(1,9) == "raceicon-") then
+            button.icon:SetAtlas(icon);
+        else
+            button.icon:SetTexture("INTERFACE\\ICONS\\" .. icon);
+        end
     else
         button.icon:SetTexture("");
+        button.icon:SetAtlas("");
     end
 
     self:SetContactButtonPosition(index);
@@ -290,21 +295,26 @@ function private:CreateEditContactPopup()
         "ClassIcon_DeathKnight", "ClassIcon_DemonHunter", "ClassIcon_Druid", "ClassIcon_Hunter", "ClassIcon_Mage", "ClassIcon_Monk",
         "ClassIcon_Paladin", "ClassIcon_Priest", "ClassIcon_Rogue", "ClassIcon_Shaman", "ClassIcon_Warlock", "ClassIcon_Warrior",
 
-        -- people
-        "Achievement_Character_Human_Female", "Achievement_Character_Human_Male",
-        "Achievement_Character_Bloodelf_Female", "Achievement_Character_Bloodelf_Male",
-        "Achievement_Character_Draenei_Female", "Achievement_Character_Draenei_Male",
-        "Achievement_Character_Dwarf_Female", "Achievement_Character_Dwarf_Male",
-        "Achievement_Character_Gnome_Female", "Achievement_Character_Gnome_Male",
-        "Achievement_Character_Human_Female", "Achievement_Character_Human_Male",
-        "Achievement_Character_Nightelf_Female", "Achievement_Character_Nightelf_Male",
-        "Achievement_Character_Orc_Female", "Achievement_Character_Orc_Male",
-        "Achievement_Character_Pandaren_Female", "Achievement_Guild_ClassyPanda",
-        "Achievement_Character_Tauren_Female", "Achievement_Character_Tauren_Male",
-        "Achievement_Character_Troll_Female", "Achievement_Character_Troll_Male",
-        "Achievement_Character_Undead_Female", "Achievement_Character_Undead_Male",
-        "achievement_worganhead",
-        "achievement_Goblinhead",
+        -- people - uses texture atlas instead of plain textures
+        "raceicon-human-female", "raceicon-human-male",
+        "raceicon-gnome-female", "raceicon-gnome-male",
+        "raceicon-dwarf-female", "raceicon-dwarf-male",
+        "raceicon-nightelf-female", "raceicon-nightelf-male",
+        "raceicon-draenei-female", "raceicon-draenei-male",
+        "raceicon-worgen-female", "raceicon-worgen-male",
+        "raceicon-voidelf-female", "raceicon-voidelf-male",
+        "raceicon-lightforged-female", "raceicon-lightforged-male",
+        --"raceicon-darkiron-female", "raceicon-darkiron-male",
+        "raceicon-pandaren-female", "raceicon-pandaren-male",
+        "raceicon-orc-female", "raceicon-orc-male",
+        "raceicon-tauren-female", "raceicon-tauren-male",
+        "raceicon-troll-female", "raceicon-troll-male",
+        "raceicon-undead-female", "raceicon-undead-male",
+        "raceicon-bloodelf-female", "raceicon-bloodelf-male",
+        "raceicon-goblin-female", "raceicon-goblin-male",
+        "raceicon-highmountain-female", "raceicon-highmountain-male",
+        "raceicon-nightborne-female", "raceicon-nightborne-male",
+        "raceicon-magharorc-female", "raceicon-maghar-male",
 
         --profession
         "inv_misc_gem_01",
@@ -451,10 +461,15 @@ function private:UpdateEditContactPopup()
         local texture = self.iconFiles[index];
 
         if (index <= numIcons and texture) then
-            buttonIcon:SetTexture("INTERFACE\\ICONS\\" .. texture);
+            if (texture:sub(1,9) == "raceicon-") then
+                buttonIcon:SetAtlas(texture);
+            else
+                buttonIcon:SetTexture("INTERFACE\\ICONS\\" .. texture);
+            end
             button:Show();
         else
             buttonIcon:SetTexture("");
+            buttonIcon:SetAtlas("");
             button:Hide();
         end
         if (popup.icon == texture) then
