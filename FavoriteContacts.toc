@@ -1,8 +1,8 @@
-## Interface: 70200
+## Interface: 70300
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox for easy access to your favorite contacts
-## Author: lqpbgjuc
-## Version: 1.2
+## Author: lqpbgjuc, eXochron
+## Version: 1.2.1
 ## SavedVariables: FavoriteContactsSettings
 
 CoreFramework\CoreFramework.xml
