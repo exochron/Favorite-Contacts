@@ -2,7 +2,7 @@
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox for easy access to your favorite contacts
 ## Author: lqpbgjuc, eXochron
-## Version: 1.2.1
+## Version: 1.2.2
 ## SavedVariables: FavoriteContactsSettings
 
 CoreFramework\CoreFramework.xml

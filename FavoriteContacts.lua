@@ -314,7 +314,7 @@ function private:CreateEditContactPopup()
         "raceicon-goblin-female", "raceicon-goblin-male",
         "raceicon-highmountain-female", "raceicon-highmountain-male",
         "raceicon-nightborne-female", "raceicon-nightborne-male",
-        "raceicon-magharorc-female", "raceicon-maghar-male",
+        --"raceicon-maghar-female", "raceicon-maghar-male",
 
         --profession
         "inv_misc_gem_01",
