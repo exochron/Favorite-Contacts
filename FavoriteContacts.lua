@@ -38,15 +38,32 @@ private.contactButtonContextMenu = nil;
 private.contextMenuContactIndex = 0;
 private.currentDragContact = 0;
 
-private.dragFrame = nil;
+private.dragIcon = nil;
 
-function private:CreateDragFrame()
-    self.dragFrame = CreateFrame("Frame", ADDON_NAME .. "DragFrame");
-    self.dragFrame:SetFrameStrata("FULLSCREEN");
-    self.dragFrame:SetScript("OnHide", function() SetCursor(nil); end);
-    self.dragFrame:SetScript("OnMouseUp", function() self:StopDrag(0);  end);
-    self.dragFrame:SetAllPoints(nil);
-    self.dragFrame:Hide();
+local function SetTexture(texture, iconName)
+    if (iconName:sub(1,9) == "raceicon-") then
+        texture:SetAtlas(iconName);
+    else
+        texture:SetTexture("INTERFACE\\ICONS\\" .. iconName);
+    end
+end
+
+function private:CreateDragIcon()
+    self.dragIcon = CreateFrame("Frame")
+    self.dragIcon:SetSize(20,20)
+    self.dragIcon:SetDontSavePosition()
+    self.dragIcon:SetMovable(false)
+    self.dragIcon:EnableMouse(false)
+    self.dragIcon:SetFrameStrata("TOOLTIP")
+    self.dragIcon.background = self.dragIcon:CreateTexture(nil, "BACKGROUND")
+    self.dragIcon.background:SetAllPoints()
+
+    self.dragIcon:Hide();
+end
+
+function private:SetDragIconWithCursor()
+    private.dragIcon:ClearAllPoints();
+    private.dragIcon:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", GetCursorPosition())
 end
 
 function private:StartDrag(index)
@@ -57,34 +74,25 @@ function private:StartDrag(index)
 
     self.currentDragContact = index;
 
-    self.dragFrame:SetScript("OnEnter", function() SetCursor("INTERFACE\\ICONS\\" .. contact.icon); end);
-    self.dragFrame:Show();
-
-    self.contactContainer:SetFrameStrata("FULLSCREEN_DIALOG");
-
-    for i = 1, (self.settings.columnCount * self.settings.rowCount) do
-        local button = _G[CONTACT_BUTTON .. i];
-        button:SetFrameStrata("FULLSCREEN_DIALOG");
-        button:SetScript("OnEnter", function() SetCursor("INTERFACE\\ICONS\\" .. contact.icon); end);
-    end
+    -- couldn't use SetCursor() because of missing Atlas features => therefore usage of own cursor frame.
+    -- couldn't use dragIcon:StartMoving() properly => therefore usage of own update Ticker.
+    self:SetDragIconWithCursor()
+    self.dragIcon.background:SetAtlas('')
+    self.dragIcon.background:SetTexture('')
+    SetTexture(self.dragIcon.background, contact.icon)
+    self.dragIcon:Show()
+    self.dragIcon.timer = C_Timer.NewTicker(0.013, self.SetDragIconWithCursor) --0.013s = ~60fps
+    --self.dragIcon:StartMoving()
 end
 
 function private:StopDrag(index)
-    self.dragFrame:SetScript("OnUpdate", nil);
-    self.dragFrame:Hide();
-
-    self.contactContainer:SetFrameStrata("HIGH");
+    --self.dragIcon:StopMovingOrSizing();
+    self.dragIcon.timer:Cancel()
+    self.dragIcon:Hide();
 
     for i = 1, (self.settings.columnCount * self.settings.rowCount) do
-        local button = _G[CONTACT_BUTTON .. i];
-        button:SetFrameStrata("HIGH");
-        button:SetChecked(false);
-        button:SetScript("OnEnter", function() SetCursor(nil); end);
+        _G[CONTACT_BUTTON .. i]:SetChecked(false);
     end
-
-    self:SwapContacts(self.currentDragContact, index);
-
-    private.currentDragContact = 0;
 end
 
 function private:CreateContactContainer()
@@ -128,13 +136,18 @@ function private:CreateContactButton(index)
         end
     end);
     button:SetScript("OnDragStop", function(sender)
-        if (sender.index ~= private.currentDragContact and sender:IsEnabled()) then
-            sender:SetChecked(false);
+        if (sender:IsEnabled()) then
+            self:StopDrag(sender.index);
+            if (false == self.contactContainer:IsMouseOver()) then
+                self:DeleteContact(private.currentDragContact);
+                private.currentDragContact = 0;
+            end
         end
     end);
     button:SetScript("OnReceiveDrag", function(sender)
         if (sender:IsEnabled()) then
-            self:StopDrag(sender.index);
+            self:SwapContacts(private.currentDragContact, index);
+            private.currentDragContact = 0;
         end
     end);
 
@@ -251,11 +264,7 @@ function private:UpdateContactButton(index)
             contact.icon = icon;
         end
 
-        if (icon:sub(1,9) == "raceicon-") then
-            button.icon:SetAtlas(icon);
-        else
-            button.icon:SetTexture("INTERFACE\\ICONS\\" .. icon);
-        end
+        SetTexture(button.icon, icon)
     else
         button.icon:SetTexture("");
         button.icon:SetAtlas("");
@@ -461,11 +470,7 @@ function private:UpdateEditContactPopup()
         local texture = self.iconFiles[index];
 
         if (index <= numIcons and texture) then
-            if (texture:sub(1,9) == "raceicon-") then
-                buttonIcon:SetAtlas(texture);
-            else
-                buttonIcon:SetTexture("INTERFACE\\ICONS\\" .. texture);
-            end
+            SetTexture(buttonIcon, texture)
             button:Show();
         else
             buttonIcon:SetTexture("");
@@ -575,11 +580,6 @@ end
 
 function private:SwapContacts(index1, index2)
     if (index1 < 1 or index1 > (self.settings.columnCount * self.settings.rowCount)) then
-        return;
-    end
-
-    if (index2 == 0) then
-        self:DeleteContact(index1);
         return;
     end
 
@@ -703,7 +703,7 @@ function private:Load()
 
     self:CreateContactContainer();
     self:CreateEditContactPopup();
-    self:CreateDragFrame();
+    self:CreateDragIcon();
 
     self:UpdateContactContainer();
     self:UpdateContactButtons();
@@ -727,36 +727,14 @@ end
 function private:OnSlashCommand(command, parameter1, parameter2, parameter3, parameter4)
     if (command == "settingsscope") then
         local settingsScope = parameter1;
-        if (parameter1 == "character" or parameter1 == "realm" or parameter1 == "global") then
-            self.globalSettings.settingsScope = parameter1;
+        if (settingsScope == "character" or settingsScope == "realm" or settingsScope == "global") then
+            self.globalSettings.settingsScope = settingsScope;
 
             self:LoadSettings();
-
             self:UpdateContactContainer();
             self:UpdateContactButtons();
 
-            print(string.format("Favorite Contacts: " .. L["Settings scope changed to %s"], parameter1));
-            return;
-        end
-    end
-
-    if (command == "size") then
-        local columnCount = tonumber(parameter1);
-        local rowCount = tonumber(parameter2);
-        if (type(columnCount) == "number" and type(rowCount) == "number") then
-            for index = 1, (self.settings.columnCount * self.settings.rowCount) do
-                local button = _G[CONTACT_BUTTON .. index];
-                if (button) then
-                    button:Hide();
-                end
-            end
-
-            self.settings.columnCount = columnCount;
-            self.settings.rowCount = rowCount;
-
-            self:UpdateContactContainer();
-            self:UpdateContactButtons();
-            print(string.format("Favorite Contacts: " .. L["Size changed to %dx%d"], columnCount, rowCount));
+            print(string.format("Favorite Contacts: " .. L["Settings scope changed to %s"], settingsScope));
             return;
         end
     end
