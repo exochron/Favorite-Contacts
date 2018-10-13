@@ -7,7 +7,8 @@ L["Create"] = "Create";
 
 -- dialog
 L["Contact Name:"] = "Contact Name:";
-L["Are you sure that you want to delete this Contact?"] = "Are you sure that you want to delete this Contact?";
+L["Contact Note:"] = "Contact Note:";
+L["Are you sure that you want to delete this Contact?"] = "Are you sure that you want to delete this contact?";
 
 -- command-line
 L["Settings scope changed to %s"] = "Settings scope changed to %s";

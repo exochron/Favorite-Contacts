@@ -6,17 +6,13 @@ local CONTACT_BUTTON_MARGIN = 12;
 local CONTACT_DEFAULT_ICON = "INV_Misc_GroupLooking";
 
 local CONFIRM_DELETE_CONTACT = ADDON_NAME .. "_CONFIRM_DELETE_CONTACT";
-local SET_CONTACT_NOTE = ADDON_NAME .. "_SET_CONTACT_NOTE";
 
 local L = ADDON.L
 
 ADDON.contactContainer = nil;
-ADDON.iconFiles = nil;
 ADDON.contactButtonContextMenu = nil;
 ADDON.contextMenuContactIndex = 0;
 ADDON.currentDragContact = 0;
-
-ADDON.dragIcon = nil;
 
 -- region callbacks
 local loginCallbacks, loadUICallbacks = {}, {}
@@ -41,58 +37,6 @@ function ADDON:SetTexture(texture, iconName)
     end
 end
 
--- couldn't use SetCursor() because of missing Atlas features => therefore usage of own cursor frame.
--- couldn't use dragIcon:StartMoving() properly => therefore usage of own update Ticker.
-function ADDON:CreateDragIcon()
-    self.dragIcon = CreateFrame("Frame")
-    self.dragIcon:SetSize(20,20)
-    self.dragIcon:SetDontSavePosition()
-    self.dragIcon:SetMovable(false)
-    self.dragIcon:EnableMouse(false)
-    self.dragIcon:SetFrameStrata("TOOLTIP")
-    self.dragIcon.background = self.dragIcon:CreateTexture(nil, "BACKGROUND")
-    self.dragIcon.background:SetAllPoints()
-
-    self.dragIcon:Hide();
-
-    self.dragIcon:SetScript('OnShow', function()
-        ADDON:SetDragIconWithCursor()
-        ADDON.dragIcon.timer = C_Timer.NewTicker(0.013, ADDON.SetDragIconWithCursor) --0.013s = ~70fps
-        --self.dragIcon:StartMoving()
-    end);
-
-    self.dragIcon:SetScript('OnHide', function()
-        ADDON.dragIcon.timer:Cancel()
-        --self.dragIcon:StopMovingOrSizing();
-    end);
-end
-
-function ADDON:SetDragIconWithCursor()
-    ADDON.dragIcon:ClearAllPoints();
-    ADDON.dragIcon:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", GetCursorPosition())
-end
-
-function ADDON:StartDrag(index)
-    local contact = self.settings.contacts[index];
-    if (not contact) then
-        return;
-    end
-
-    self.currentDragContact = index;
-
-    self.dragIcon.background:SetAtlas('')
-    self.dragIcon.background:SetTexture('')
-    self:SetTexture(self.dragIcon.background, contact.icon)
-    self.dragIcon:Show()
-end
-
-function ADDON:StopDrag(index)
-    self.dragIcon:Hide()
-
-    for i = 1, (self.settings.columnCount * self.settings.rowCount) do
-        _G[CONTACT_BUTTON .. i]:SetChecked(false);
-    end
-end
 
 local function CreateContactContainer()
     ADDON.contactContainer = CreateFrame("Frame", nil, UIParent)
@@ -133,11 +77,16 @@ function ADDON:CreateContactButton(index)
     button:SetScript("OnDragStart", function(sender)
         if (sender:IsEnabled()) then
             self:StartDrag(sender.index);
+            self.currentDragContact = sender.index;
         end
     end);
     button:SetScript("OnDragStop", function(sender)
         if (sender:IsEnabled()) then
-            self:StopDrag(sender.index);
+            self:StopDrag(sender.index)
+            for i = 1, (self.settings.columnCount * self.settings.rowCount) do
+                _G[CONTACT_BUTTON .. i]:SetChecked(false)
+            end
+
             if (false == self.contactContainer:IsMouseOver()) then
                 self:DeleteContact(ADDON.currentDragContact);
                 ADDON.currentDragContact = 0;
@@ -176,7 +125,10 @@ end
 
 function ADDON:OnContactButtonClicked(button, buttonType)
     if (self.currentDragContact ~= 0) then
-        self:StopDrag(button.index);
+        self:StopDrag(button.index)
+        for i = 1, (self.settings.columnCount * self.settings.rowCount) do
+            _G[CONTACT_BUTTON .. i]:SetChecked(false)
+        end
         return;
     end
 
@@ -222,12 +174,6 @@ function ADDON:CreateContactButtonContextMenu(sender, level)
         info.text = EDIT;
         info.func = function()
             self:ShowEditContactPopup(self.contextMenuContactIndex);
-        end;
-        UIDropDownMenu_AddButton(info, level);
-
-        info.text = SET_NOTE;
-        info.func = function()
-            self:EditContactNote(self.contextMenuContactIndex);
         end;
         UIDropDownMenu_AddButton(info, level);
 
@@ -319,11 +265,12 @@ function ADDON:SetEnableContacts(enabled)
     end
 end
 
-function ADDON:SetContact(index, recipient, icon)
+function ADDON:SetContact(index, recipient, icon, note)
     self.settings.contacts[index] = self.settings.contacts[index] or { }
     local contact = self.settings.contacts[index]
     contact.recipient = recipient
     contact.icon = icon
+    contact.note = note
 
     self:UpdateContactButton(index)
 end
@@ -360,53 +307,6 @@ function ADDON:DeleteContact(index, confirmed)
     self.settings.contacts[index] = nil;
 
     self:UpdateContactButtons();
-end
-
-StaticPopupDialogs[SET_CONTACT_NOTE] = {
-   text = SET_FRIENDNOTE_LABEL,
-   button1 = ACCEPT,
-   button2 = CANCEL,
-   hasEditBox = 1,
-   maxLetters = 48,
-   countInvisibleLetters = true,
-   editBoxWidth = 350,
-   OnAccept = function(self) end,
-   OnShow = function(self) end,
-   OnHide = function(self)
-      ChatEdit_FocusActiveWindow();
-      self.editBox:SetText("");
-   end,
-   EditBoxOnEnterPressed = function(self)
-      self:GetParent().button1:Click();
-   end,
-   EditBoxOnEscapePressed = function(self)
-      self:GetParent():Hide();
-   end,
-   timeout = 0,
-   exclusive = 1,
-   whileDead = 1,
-   hideOnEscape = 1
-};
-
-function ADDON:EditContactNote(index)
-    local contact = self.settings.contacts[index];
-    if (not contact) then
-        return;
-    end
-
-    local dialog = StaticPopupDialogs[SET_CONTACT_NOTE];
-    dialog.OnShow = function(self)
-        if (contact.note) then
-            self.editBox:SetText(contact.note);
-        else
-            self.editBox:SetText("");
-        end
-      self.editBox:SetFocus();
-   end;
-    dialog.OnAccept = function(self)
-        contact.note = self.editBox:GetText();
-    end;
-    StaticPopup_Show(SET_CONTACT_NOTE, contact.recipient);
 end
 
 function ADDON:SwapContacts(index1, index2)
@@ -514,7 +414,6 @@ function ADDON:Load()
         if initUI then
             CreateContactContainer()
             FireCallbacks(loadUICallbacks)
-            self:CreateDragIcon();
 
             self:UpdateContactContainer();
             self:UpdateContactButtons();
@@ -530,16 +429,6 @@ function ADDON:Load()
     MailFrame:HookScript("OnHide", function() self.contactContainer:Hide(); end);
 
     self:BulkMailInboxSupport();
-end
-
-function ADDON:HideButtions()
-    -- hide all buttons first before showing them again
-    for index = 1, (ADDON.settings.columnCount * ADDON.settings.rowCount) do
-        local button = _G[CONTACT_BUTTON .. index];
-        if (button) then
-            button:Hide();
-        end
-    end
 end
 
 local frame = CreateFrame("Frame")

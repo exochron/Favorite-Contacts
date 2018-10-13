@@ -11,4 +11,5 @@ FavoriteContacts.lua
 Settings.lua
 UI\EditPopup.xml
 UI\EditPopup.lua
+UI\DragCursor.lua
 SlashCommand.lua

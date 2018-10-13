@@ -1,10 +1,10 @@
 local ADDON_NAME, ADDON = ...
 
 local CONTACT_DEFAULT_ICON = "INV_Misc_GroupLooking"
-local NUM_ICONS_PER_ROW = 6
-local NUM_ICON_ROWS = 6
+local NUM_ICONS_PER_ROW = 8
+local NUM_ICON_ROWS = 8
 local NUM_ICONS_SHOWN = NUM_ICONS_PER_ROW * NUM_ICON_ROWS
-local ICON_ROW_HEIGHT = 36
+local ICON_ROW_HEIGHT = 44
 
 local iconFiles
 local popup
@@ -12,44 +12,67 @@ local popup
 local function UpdateEditContactPopup()
     local scrollFrame = popup.BorderBox.ScrollFrame
     local numIcons = #iconFiles
-    local scrollOffset = FauxScrollFrame_GetOffset(scrollFrame);
+    local scrollOffset = FauxScrollFrame_GetOffset(scrollFrame)
 
     for i = 1, NUM_ICONS_SHOWN do
-        local button = popup.BorderBox["Button" .. i];
+        local button = popup.BorderBox["Button" .. i]
         local buttonIcon = button.Icon
-        local index = (scrollOffset * NUM_ICONS_PER_ROW) + i;
-        local texture = iconFiles[index];
+        local index = (scrollOffset * NUM_ICONS_PER_ROW) + i
+        local texture = iconFiles[index]
 
         if (index <= numIcons and texture) then
             ADDON:SetTexture(buttonIcon, texture)
-            button:Show();
+            button:Show()
         else
-            buttonIcon:SetTexture("");
-            buttonIcon:SetAtlas("");
-            button:Hide();
+            buttonIcon:SetTexture("")
+            buttonIcon:SetAtlas("")
+            button:Hide()
         end
         if (popup.icon == texture) then
-            button:SetChecked(true);
+            button:SetChecked(true)
         else
-            button:SetChecked(false);
+            button:SetChecked(false)
         end
     end
 
-    FauxScrollFrame_Update(scrollFrame, ceil(numIcons / NUM_ICONS_PER_ROW), NUM_ICON_ROWS, ICON_ROW_HEIGHT);
+    FauxScrollFrame_Update(scrollFrame, ceil(numIcons / NUM_ICONS_PER_ROW), NUM_ICON_ROWS, ICON_ROW_HEIGHT)
 end
 
 local function EditContactPopupSelectTexture(iconIndex)
-    popup.icon = iconFiles[iconIndex];
-    popup.BorderBox.IconName:SetText(popup.icon);
+    popup.icon = iconFiles[iconIndex]
+    popup.BorderBox.IconName:SetText(popup.icon)
     UpdateEditContactPopup()
 end
 
+local function CreateIconButtons()
+    local previous, firstLastRow
+
+    for i = 1, NUM_ICONS_SHOWN do
+        local modulo = math.fmod(i, NUM_ICONS_PER_ROW)
+
+        local button = CreateFrame("CheckButton", nil, popup, "FavoriteContactsEditContactButtonTemplate", i)
+        if i == 1 then
+            button:SetPoint("TOPLEFT", popup.BorderBox.IconLabel, "BOTTOMLEFT", 0, -10)
+            firstLastRow = button
+        elseif modulo == 1 then
+            button:SetPoint("TOPLEFT", firstLastRow, "BOTTOMLEFT", 0, -8)
+            firstLastRow = button
+        else
+            button:SetPoint("LEFT", previous, "RIGHT", 8, 0)
+        end
+
+        popup.BorderBox["Button" .. i] = button
+        previous = button
+    end
+end
 
 local function CreateEditContactPopup()
     local L = ADDON.L
 
-    popup = CreateFrame("Frame", "FCTest", UIParent, "FavoriteContactsEditContactPopupTemplate")
+    popup = CreateFrame("Frame", nil, UIParent, "FavoriteContactsEditContactPopupTemplate")
+    CreateIconButtons()
     popup.BorderBox.NameLabel:SetText(L["Contact Name:"])
+    popup.BorderBox.NoteLabel:SetText(L["Contact Note:"])
 
     popup:SetScript("OnShow", function(sender)
         iconFiles = {
@@ -129,13 +152,14 @@ local function CreateEditContactPopup()
 
         local index = popup.index
         local recipient = popup.BorderBox.ContactNameEditBox:GetText()
+        local note = popup.BorderBox.NoteEditBox:GetText()
 
         local icon = popup.BorderBox.IconName:GetText()
         if (not icon or string.len(icon) == 0) then
             icon = CONTACT_DEFAULT_ICON
         end
 
-        ADDON:SetContact(index, recipient, icon)
+        ADDON:SetContact(index, recipient, icon, note)
 
         ADDON:SetSelectedContact(-1)
         ADDON:SetEnableContacts(true)
@@ -152,19 +176,22 @@ end
 ADDON:RegisterLoadUICallback(CreateEditContactPopup)
 
 function ADDON:ShowEditContactPopup(index)
-    popup.index = index;
+    popup.index = index
 
-    local contact = self.settings.contacts[index] or { };
-    popup.icon = contact.icon or CONTACT_DEFAULT_ICON;
+    local contact = self.settings.contacts[index] or {}
+    popup.icon = contact.icon or CONTACT_DEFAULT_ICON
 
-    local editBox = popup.BorderBox.ContactNameEditBox
-    editBox:SetText(contact.recipient or "");
+    local nameEdit = popup.BorderBox.ContactNameEditBox
+    nameEdit:SetText(contact.recipient or "")
 
-    local editBox2 = popup.BorderBox.IconName
-    editBox2:SetText(popup.icon or "")
+    local noteEdit = popup.BorderBox.NoteEditBox
+    noteEdit:SetText(contact.note or "")
+
+    local iconEdit = popup.BorderBox.IconName
+    iconEdit:SetText(popup.icon or "")
 
     popup:Show()
-    editBox:SetFocus()
+    nameEdit:SetFocus()
 
     self:SetSelectedContact(popup.index)
     self:SetEnableContacts(false)
