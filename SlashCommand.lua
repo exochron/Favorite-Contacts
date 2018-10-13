@@ -5,7 +5,10 @@ function SlashCmdList.FAVORITECONTACTS(msg)
     msg = msg:lower()
 
     local L = ADDON.L
-    local command, parameter1, parameter2 = unpack(split(msg, " "))
+    local command, parameter1, parameter2
+    if msg then
+        command, parameter1, parameter2 = unpack(split(msg, " "))
+    end
 
     if (command == "size") then
         local columnCount = tonumber(parameter1);

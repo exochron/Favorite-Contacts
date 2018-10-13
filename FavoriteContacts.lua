@@ -45,8 +45,8 @@ local function CreateContactContainer()
     ADDON.contactContainer:Hide()
     ADDON.contactContainer.buttons = {}
 
-    ADDON.contactButtonContextMenu = CreateFrame("Frame", CONTACT_BUTTON .. "ContextMenu", nil, "UIDropDownMenuTemplate");
-    UIDropDownMenu_Initialize(ADDON.contactButtonContextMenu, function(sender, level) ADDON:CreateContactButtonContextMenu(sender, level); end, "MENU");
+    ADDON.contactButtonContextMenu = MSA_DropDownMenu_Create(CONTACT_BUTTON .. "ContextMenu", ADDON.contactContainer)
+    MSA_DropDownMenu_Initialize(ADDON.contactButtonContextMenu, ADDON.CreateContactButtonContextMenu, "MENU");
 end
 
 function ADDON:CreateContactButton(index)
@@ -150,7 +150,7 @@ function ADDON:OnContactButtonClicked(button, buttonType)
 
     if (buttonType == "RightButton") then
         self.contextMenuContactIndex = button.index;
-        ToggleDropDownMenu(1, nil, self.contactButtonContextMenu, button, 0, 0);
+        MSA_ToggleDropDownMenu(1, nil, self.contactButtonContextMenu, button, 0, 0);
         return;
     end
 end
@@ -166,7 +166,7 @@ function ADDON:SendMail()
 end
 
 function ADDON:CreateContactButtonContextMenu(sender, level)
-    local info = UIDropDownMenu_CreateInfo();
+    local info = MSA_DropDownMenu_CreateInfo();
     info.notCheckable = true;
 
     local contact = self.settings.contacts[self.contextMenuContactIndex];
@@ -175,24 +175,24 @@ function ADDON:CreateContactButtonContextMenu(sender, level)
         info.func = function()
             self:ShowEditContactPopup(self.contextMenuContactIndex);
         end;
-        UIDropDownMenu_AddButton(info, level);
+        MSA_DropDownMenu_AddButton(info, level);
 
         info.text = DELETE;
         info.func = function()
             self:DeleteContact(self.contextMenuContactIndex);
         end;
-        UIDropDownMenu_AddButton(info, level);
+        MSA_DropDownMenu_AddButton(info, level);
     else
         info.text = L["Create"];
         info.func = function()
             self:ShowEditContactPopup(self.contextMenuContactIndex);
         end;
-        UIDropDownMenu_AddButton(info, level);
+        MSA_DropDownMenu_AddButton(info, level);
     end
 
     info.text = CANCEL;
     info.func = nil;
-    UIDropDownMenu_AddButton(info, level);
+    MSA_DropDownMenu_AddButton(info, level);
 end
 
 function ADDON:UpdateContactButton(index)
