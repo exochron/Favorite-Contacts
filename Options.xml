@@ -1,0 +1,107 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+    <Slider name="FavoriteContactsOptionsSliderTemplate" inherits="HorizontalSliderTemplate" virtual="true">
+
+        <Size x="200" y="17"/>
+
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString inherits="GameFontHighlightLeft" parentKey="Label">
+                    <Anchors>
+                        <Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="-10" y="0"/>
+                    </Anchors>
+                </FontString>
+
+                <FontString inherits="GameFontHighlightSmall" text="1">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT">
+                            <Offset>
+                                <AbsDimension x="-4" y="3"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+                <FontString inherits="GameFontHighlightSmall" text="9">
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT">
+                            <Offset>
+                                <AbsDimension x="4" y="3"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+
+    </Slider>
+
+
+    <Frame name="FavoriteContactsOptions">
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString inherits="GameFontNormalLarge" text="Favorite Contacts">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="16" y="-16"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+
+        <Frames>
+            <Slider name="$parentRowSlider" inherits="FavoriteContactsOptionsSliderTemplate"
+                    minValue="1" maxValue="9" valueStep="1" stepsPerPage="1" obeyStepOnDrag="true">
+                <Anchors>
+                    <Anchor point="TOP" x="0" y="-50"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        self.Label:SetText("Count of Rows")
+                    </OnLoad>
+                </Scripts>
+            </Slider>
+            <Slider name="$parentColumnSlider" inherits="FavoriteContactsOptionsSliderTemplate"
+                    minValue="1" maxValue="9" valueStep="1" stepsPerPage="1" obeyStepOnDrag="true">
+                <Anchors>
+                    <Anchor point="TOP" x="0" y="-80"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        self.Label:SetText("Count of Columns")
+                    </OnLoad>
+                </Scripts>
+            </Slider>
+
+            <Frame name="$parentPositionDropDown" inherits="GlueDropDownMenuTemplate">
+                <Anchors>
+                    <Anchor point="TOP" x="0" y="-110"/>
+                </Anchors>
+
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString inherits="GameFontHighlightLeft" parentKey="Label" text="Position">
+                            <Anchors>
+                                <Anchor point="RIGHT" relativeTo="$parent" relativePoint="LEFT" x="-10" y="0"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+
+                <Scripts>
+                    <OnLoad>
+                        self.type = CONTROLTYPE_DROPDOWN;
+                        <!--AudioOptionsSoundPanelHardwareDropDown_OnLoad(self);-->
+                    </OnLoad>
+                </Scripts>
+            </Frame>
+
+        </Frames>
+
+        <Scripts>
+            <OnLoad>
+                self.name = "FavoriteContacts";
+                InterfaceOptions_AddCategory(self);
+            </OnLoad>
+        </Scripts>
+    </Frame>
+</Ui>

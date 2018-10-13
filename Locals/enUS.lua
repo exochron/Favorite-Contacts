@@ -1,6 +1,6 @@
-﻿local ADDON_NAME = ...;
+﻿local ADDON_NAME, ADDON = ...
 
-L = CoreFramework:GetModule("Localization", "1.1"):NewLocalization(ADDON_NAME, "enUS");
+local L = ADDON.L or {}
 
 -- context menu
 L["Create"] = "Create";
@@ -21,3 +21,5 @@ L["Position set to %s"] = "Position gesetzt auf %s";
 L["Button scale factor set to %d"] = "Button scale factor set to %d";
 L["ClickToSend mode enabled"] = "ClickToSend mode enabled";
 L["ClickToSend mode disabled"] = "ClickToSend mode disabled";
+
+ADDON.L = L

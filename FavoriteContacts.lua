@@ -1,46 +1,39 @@
-local ADDON_NAME = ...;
+local ADDON_NAME, ADDON = ...
 
 local CONTACT_BUTTON = ADDON_NAME .. "ContactButton";
 local CONTACT_BUTTON_SIZE = 36;
 local CONTACT_BUTTON_MARGIN = 12;
 local CONTACT_DEFAULT_ICON = "INV_Misc_GroupLooking";
 
-local EDIT_CONTACT_POPUP = ADDON_NAME .. "EditContactPopup";
-local NUM_ICONS_PER_ROW = 5;
-local NUM_ICON_ROWS = 4;
-local NUM_ICONS_SHOWN = NUM_ICONS_PER_ROW * NUM_ICON_ROWS;
-local ICON_ROW_HEIGHT = 36;
-
 local CONFIRM_DELETE_CONTACT = ADDON_NAME .. "_CONFIRM_DELETE_CONTACT";
 local SET_CONTACT_NOTE = ADDON_NAME .. "_SET_CONTACT_NOTE";
 
-local L = CoreFramework:GetModule("Localization", "1.1"):GetLocalization(ADDON_NAME);
+local L = ADDON.L
 
-local defaultSettings = {
-    contacts = { },
-    columnCount = 2,
-    rowCount = 9,
-    position = "RIGHT",
-    scale = 1.0,
-    clickToSend = false,
-};
+ADDON.contactContainer = nil;
+ADDON.iconFiles = nil;
+ADDON.contactButtonContextMenu = nil;
+ADDON.contextMenuContactIndex = 0;
+ADDON.currentDragContact = 0;
 
-local initialState = {
-    globalSettings = {
-        settingsScope = "realm",
-    },
-};
-local private = CoreFramework:GetModule("Addon", "1.2"):NewAddon(ADDON_NAME, initialState);
+ADDON.dragIcon = nil;
 
-private.contactContainer = nil;
-private.iconFiles = nil;
-private.contactButtonContextMenu = nil;
-private.contextMenuContactIndex = 0;
-private.currentDragContact = 0;
+-- region callbacks
+local loginCallbacks, loadUICallbacks = {}, {}
+function ADDON:RegisterLoginCallback(func)
+    table.insert(loginCallbacks, func)
+end
+function ADDON:RegisterLoadUICallback(func)
+    table.insert(loadUICallbacks, func)
+end
+local function FireCallbacks(callbacks)
+    for _, callback in pairs(callbacks) do
+        callback()
+    end
+end
+--endregion
 
-private.dragIcon = nil;
-
-local function SetTexture(texture, iconName)
+function ADDON:SetTexture(texture, iconName)
     if (iconName:sub(1,9) == "raceicon-") then
         texture:SetAtlas(iconName);
     else
@@ -48,7 +41,9 @@ local function SetTexture(texture, iconName)
     end
 end
 
-function private:CreateDragIcon()
+-- couldn't use SetCursor() because of missing Atlas features => therefore usage of own cursor frame.
+-- couldn't use dragIcon:StartMoving() properly => therefore usage of own update Ticker.
+function ADDON:CreateDragIcon()
     self.dragIcon = CreateFrame("Frame")
     self.dragIcon:SetSize(20,20)
     self.dragIcon:SetDontSavePosition()
@@ -59,14 +54,25 @@ function private:CreateDragIcon()
     self.dragIcon.background:SetAllPoints()
 
     self.dragIcon:Hide();
+
+    self.dragIcon:SetScript('OnShow', function()
+        ADDON:SetDragIconWithCursor()
+        ADDON.dragIcon.timer = C_Timer.NewTicker(0.013, ADDON.SetDragIconWithCursor) --0.013s = ~70fps
+        --self.dragIcon:StartMoving()
+    end);
+
+    self.dragIcon:SetScript('OnHide', function()
+        ADDON.dragIcon.timer:Cancel()
+        --self.dragIcon:StopMovingOrSizing();
+    end);
 end
 
-function private:SetDragIconWithCursor()
-    private.dragIcon:ClearAllPoints();
-    private.dragIcon:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", GetCursorPosition())
+function ADDON:SetDragIconWithCursor()
+    ADDON.dragIcon:ClearAllPoints();
+    ADDON.dragIcon:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", GetCursorPosition())
 end
 
-function private:StartDrag(index)
+function ADDON:StartDrag(index)
     local contact = self.settings.contacts[index];
     if (not contact) then
         return;
@@ -74,38 +80,32 @@ function private:StartDrag(index)
 
     self.currentDragContact = index;
 
-    -- couldn't use SetCursor() because of missing Atlas features => therefore usage of own cursor frame.
-    -- couldn't use dragIcon:StartMoving() properly => therefore usage of own update Ticker.
-    self:SetDragIconWithCursor()
     self.dragIcon.background:SetAtlas('')
     self.dragIcon.background:SetTexture('')
-    SetTexture(self.dragIcon.background, contact.icon)
+    self:SetTexture(self.dragIcon.background, contact.icon)
     self.dragIcon:Show()
-    self.dragIcon.timer = C_Timer.NewTicker(0.013, self.SetDragIconWithCursor) --0.013s = ~60fps
-    --self.dragIcon:StartMoving()
 end
 
-function private:StopDrag(index)
-    --self.dragIcon:StopMovingOrSizing();
-    self.dragIcon.timer:Cancel()
-    self.dragIcon:Hide();
+function ADDON:StopDrag(index)
+    self.dragIcon:Hide()
 
     for i = 1, (self.settings.columnCount * self.settings.rowCount) do
         _G[CONTACT_BUTTON .. i]:SetChecked(false);
     end
 end
 
-function private:CreateContactContainer()
-    self.contactContainer = CreateFrame("Frame", ADDON_NAME .. "ContactContainer", UIParent);
-    self.contactContainer:SetToplevel(true);
-    self.contactContainer:SetFrameStrata("HIGH");
-    self.contactContainer:Hide();
+local function CreateContactContainer()
+    ADDON.contactContainer = CreateFrame("Frame", nil, UIParent)
+    ADDON.contactContainer:SetToplevel(true)
+    ADDON.contactContainer:SetFrameStrata("HIGH")
+    ADDON.contactContainer:Hide()
+    ADDON.contactContainer.buttons = {}
 
-    self.contactButtonContextMenu = CreateFrame("Frame", CONTACT_BUTTON .. "ContextMenu", nil, "UIDropDownMenuTemplate");
-    UIDropDownMenu_Initialize(self.contactButtonContextMenu, function(sender, level) self:CreateContactButtonContextMenu(sender, level); end, "MENU");
+    ADDON.contactButtonContextMenu = CreateFrame("Frame", CONTACT_BUTTON .. "ContextMenu", nil, "UIDropDownMenuTemplate");
+    UIDropDownMenu_Initialize(ADDON.contactButtonContextMenu, function(sender, level) ADDON:CreateContactButtonContextMenu(sender, level); end, "MENU");
 end
 
-function private:CreateContactButton(index)
+function ADDON:CreateContactButton(index)
     local button = _G[CONTACT_BUTTON .. index];
     if (not button) then
         button = CreateFrame("CheckButton", CONTACT_BUTTON .. index, self.contactContainer, "PopupButtonTemplate");
@@ -139,15 +139,15 @@ function private:CreateContactButton(index)
         if (sender:IsEnabled()) then
             self:StopDrag(sender.index);
             if (false == self.contactContainer:IsMouseOver()) then
-                self:DeleteContact(private.currentDragContact);
-                private.currentDragContact = 0;
+                self:DeleteContact(ADDON.currentDragContact);
+                ADDON.currentDragContact = 0;
             end
         end
     end);
     button:SetScript("OnReceiveDrag", function(sender)
         if (sender:IsEnabled()) then
-            self:SwapContacts(private.currentDragContact, index);
-            private.currentDragContact = 0;
+            self:SwapContacts(ADDON.currentDragContact, index);
+            ADDON.currentDragContact = 0;
         end
     end);
 
@@ -174,7 +174,7 @@ function private:CreateContactButton(index)
     return button;
 end
 
-function private:OnContactButtonClicked(button, buttonType)
+function ADDON:OnContactButtonClicked(button, buttonType)
     if (self.currentDragContact ~= 0) then
         self:StopDrag(button.index);
         return;
@@ -186,7 +186,7 @@ function private:OnContactButtonClicked(button, buttonType)
             if (contact) then
                 MailFrameTab_OnClick(nil, 2);
                 SendMailNameEditBox:SetText(contact.recipient);
-                SendMailNameEditBox:SetFocus();
+                SendMailSubjectEditBox:SetFocus();
 
                 if (self.settings.clickToSend) then
                     self:SendMail();
@@ -203,7 +203,7 @@ function private:OnContactButtonClicked(button, buttonType)
     end
 end
 
-function private:SendMail()
+function ADDON:SendMail()
     if (not SendMailMailButton:IsVisible() or
         not SendMailMailButton:IsEnabled())
     then
@@ -213,7 +213,7 @@ function private:SendMail()
     SendMailMailButton:Click();
 end
 
-function private:CreateContactButtonContextMenu(sender, level)
+function ADDON:CreateContactButtonContextMenu(sender, level)
     local info = UIDropDownMenu_CreateInfo();
     info.notCheckable = true;
 
@@ -249,7 +249,7 @@ function private:CreateContactButtonContextMenu(sender, level)
     UIDropDownMenu_AddButton(info, level);
 end
 
-function private:UpdateContactButton(index)
+function ADDON:UpdateContactButton(index)
     if (index < 1 and index > self.settings.columnCount * self.settings.rowCount) then
         return;
     end
@@ -264,7 +264,7 @@ function private:UpdateContactButton(index)
             contact.icon = icon;
         end
 
-        SetTexture(button.icon, icon)
+        self:SetTexture(button.icon, icon)
     else
         button.icon:SetTexture("");
         button.icon:SetAtlas("");
@@ -275,13 +275,13 @@ function private:UpdateContactButton(index)
     button:Show();
 end
 
-function private:UpdateContactButtons()
+function ADDON:UpdateContactButtons()
     for index = 1, (self.settings.columnCount * self.settings.rowCount) do
         self:UpdateContactButton(index);
     end
 end
 
-function private:SetContactButtonPosition(index)
+function ADDON:SetContactButtonPosition(index)
     local button = _G[CONTACT_BUTTON .. index];
 
     button:ClearAllPoints();
@@ -294,145 +294,7 @@ function private:SetContactButtonPosition(index)
     end
 end
 
-function private:CreateEditContactPopup()
-    local popup = _G[EDIT_CONTACT_POPUP];
-    popup:SetScript("OnShow", function(sender)
-    self.iconFiles = {
-        CONTACT_DEFAULT_ICON,
-
-        -- class
-        "ClassIcon_DeathKnight", "ClassIcon_DemonHunter", "ClassIcon_Druid", "ClassIcon_Hunter", "ClassIcon_Mage", "ClassIcon_Monk",
-        "ClassIcon_Paladin", "ClassIcon_Priest", "ClassIcon_Rogue", "ClassIcon_Shaman", "ClassIcon_Warlock", "ClassIcon_Warrior",
-
-        -- people - uses texture atlas instead of plain textures
-        "raceicon-human-female", "raceicon-human-male",
-        "raceicon-gnome-female", "raceicon-gnome-male",
-        "raceicon-dwarf-female", "raceicon-dwarf-male",
-        "raceicon-nightelf-female", "raceicon-nightelf-male",
-        "raceicon-draenei-female", "raceicon-draenei-male",
-        "raceicon-worgen-female", "raceicon-worgen-male",
-        "raceicon-voidelf-female", "raceicon-voidelf-male",
-        "raceicon-lightforged-female", "raceicon-lightforged-male",
-        --"raceicon-darkiron-female", "raceicon-darkiron-male",
-        "raceicon-pandaren-female", "raceicon-pandaren-male",
-        "raceicon-orc-female", "raceicon-orc-male",
-        "raceicon-tauren-female", "raceicon-tauren-male",
-        "raceicon-troll-female", "raceicon-troll-male",
-        "raceicon-undead-female", "raceicon-undead-male",
-        "raceicon-bloodelf-female", "raceicon-bloodelf-male",
-        "raceicon-goblin-female", "raceicon-goblin-male",
-        "raceicon-highmountain-female", "raceicon-highmountain-male",
-        "raceicon-nightborne-female", "raceicon-nightborne-male",
-        --"raceicon-maghar-female", "raceicon-maghar-male",
-
-        --profession
-        "inv_misc_gem_01",
-        "Trade_Engraving",
-        "Trade_Engineering",
-        "Trade_Alchemy",
-        "inv_inscription_tradeskill01",
-        "Trade_Tailoring",
-        "inv_misc_armorkit_17",
-        "Trade_BlackSmithing",
-        "Trade_Herbalism",
-        "inv_misc_pelt_wolf_01",
-        "Trade_Mining",
-        "trade_archaeology",
-        "inv_misc_food_15",
-        "Trade_Fishing",
-        "spell_holy_sealofsacrifice",
-
-        -- faction
-        "INV_BannerPVP_01",
-        "INV_BannerPVP_02",
-
-        "ACHIEVEMENT_GUILDPERK_MOBILEBANKING",
-        "Garrison_Building_TradingPost",
-    };
-
-    _G[EDIT_CONTACT_POPUP .. "ContactNameLabel"]:SetText(L["Contact Name:"]);
-
-    end);
-    popup:SetScript("OnHide", function()
-        self.iconFiles = nil;
-        collectgarbage();
-    end);
-
-    for index = 1, NUM_ICONS_SHOWN do
-        local icon = _G[EDIT_CONTACT_POPUP .. "Button" .. index];
-        icon:SetScript("OnClick", function(sender)
-            local scrollFrame = _G[EDIT_CONTACT_POPUP .. "ScrollFrame"];
-            local scrollOffset = FauxScrollFrame_GetOffset(scrollFrame);
-
-            self:EditContactPopupSelectTexture(sender:GetID() + (scrollOffset * NUM_ICONS_PER_ROW));
-        end);
-    end
-
-    local scrollFrame = _G[EDIT_CONTACT_POPUP .. "ScrollFrame"];
-    scrollFrame:SetScript("OnVerticalScroll", function(sender, offset)
-        FauxScrollFrame_OnVerticalScroll(sender, offset, ICON_ROW_HEIGHT, function() self:UpdateEditContactPopup(); end);
-    end);
-
-    local okayButton = _G[EDIT_CONTACT_POPUP .. "OkayButton"];
-    okayButton:SetScript("OnClick", function()
-        local popup = _G[EDIT_CONTACT_POPUP];
-        popup:Hide();
-
-        local editBox = _G[EDIT_CONTACT_POPUP .. "ContactNameEditBox"];
-
-        local index = popup.index;
-        local recipient = editBox:GetText();
-
-        local editBox2 = _G[EDIT_CONTACT_POPUP .. "IconName"];
-        local icon = editBox2:GetText();
-        if (not icon or string.len(icon) == 0) then
-            icon = CONTACT_DEFAULT_ICON;
-        end
-
-        self.settings.contacts[index] = self.settings.contacts[index] or { };
-        local contact = self.settings.contacts[index];
-        contact.recipient = recipient;
-        contact.icon = icon;
-
-        self:SetSelectedContact(-1);
-        self:SetEnableContacts(true);
-
-        self:UpdateContactButton(index);
-    end);
-
-    local cancelButton = _G[EDIT_CONTACT_POPUP .. "CancelButton"];
-    cancelButton:SetScript("OnClick", function()
-        local popup = _G[EDIT_CONTACT_POPUP];
-        popup:Hide();
-
-        self:SetSelectedContact(-1);
-        self:SetEnableContacts(true);
-    end);
-end
-
-function private:ShowEditContactPopup(index)
-    local popup = _G[EDIT_CONTACT_POPUP];
-    popup.index = index;
-
-    local contact = self.settings.contacts[index] or { };
-    popup.icon = contact.icon or CONTACT_DEFAULT_ICON;
-
-    local editBox = _G[EDIT_CONTACT_POPUP .. "ContactNameEditBox"];
-    editBox:SetText(contact.recipient or "");
-
-    local editBox2 = _G[EDIT_CONTACT_POPUP .. "IconName"];
-    editBox2:SetText(popup.icon or "");
-
-    popup:Show();
-    editBox:SetFocus();
-
-    self:SetSelectedContact(popup.index);
-    self:SetEnableContacts(false);
-
-    self:UpdateEditContactPopup();
-end
-
-function private:SetSelectedContact(selectedIndex)
+function ADDON:SetSelectedContact(selectedIndex)
     for index = 1, (self.settings.columnCount * self.settings.rowCount) do
         local button = _G[CONTACT_BUTTON .. index];
         button:SetChecked(false);
@@ -444,7 +306,7 @@ function private:SetSelectedContact(selectedIndex)
     end
 end
 
-function private:SetEnableContacts(enabled)
+function ADDON:SetEnableContacts(enabled)
     for index = 1, (self.settings.columnCount * self.settings.rowCount) do
         local button = _G[CONTACT_BUTTON .. index];
         button:SetEnabled(enabled);
@@ -457,44 +319,13 @@ function private:SetEnableContacts(enabled)
     end
 end
 
-function private:UpdateEditContactPopup()
-    local popup = _G[EDIT_CONTACT_POPUP];
-    local scrollFrame = _G[EDIT_CONTACT_POPUP .. "ScrollFrame"];
-    local numIcons = #self.iconFiles;
-    local scrollOffset = FauxScrollFrame_GetOffset(scrollFrame);
+function ADDON:SetContact(index, recipient, icon)
+    self.settings.contacts[index] = self.settings.contacts[index] or { }
+    local contact = self.settings.contacts[index]
+    contact.recipient = recipient
+    contact.icon = icon
 
-    for i = 1, NUM_ICONS_SHOWN do
-        local button = _G[EDIT_CONTACT_POPUP .. "Button" .. i];
-        local buttonIcon = _G[EDIT_CONTACT_POPUP .. "Button" .. i .. "Icon"];
-        local index = (scrollOffset * NUM_ICONS_PER_ROW) + i;
-        local texture = self.iconFiles[index];
-
-        if (index <= numIcons and texture) then
-            SetTexture(buttonIcon, texture)
-            button:Show();
-        else
-            buttonIcon:SetTexture("");
-            buttonIcon:SetAtlas("");
-            button:Hide();
-        end
-        if (popup.icon == texture) then
-            button:SetChecked(true);
-        else
-            button:SetChecked(false);
-        end
-    end
-
-    FauxScrollFrame_Update(scrollFrame, ceil(numIcons / NUM_ICONS_PER_ROW), NUM_ICON_ROWS, ICON_ROW_HEIGHT);
-end
-
-function private:EditContactPopupSelectTexture(iconIndex)
-    local popup = _G[EDIT_CONTACT_POPUP];
-    popup.icon = self.iconFiles[iconIndex];
-
-    local editBox = _G[EDIT_CONTACT_POPUP .. "IconName"];
-    editBox:SetText(popup.icon);
-
-    self:UpdateEditContactPopup();
+    self:UpdateContactButton(index)
 end
 
 StaticPopupDialogs[CONFIRM_DELETE_CONTACT] = {
@@ -508,7 +339,7 @@ StaticPopupDialogs[CONFIRM_DELETE_CONTACT] = {
     preferredIndex = 3,
 }
 
-function private:DeleteContact(index, confirmed)
+function ADDON:DeleteContact(index, confirmed)
     if (not confirmed) then
         self:SetSelectedContact(index);
         self:SetEnableContacts(false);
@@ -557,7 +388,7 @@ StaticPopupDialogs[SET_CONTACT_NOTE] = {
    hideOnEscape = 1
 };
 
-function private:EditContactNote(index)
+function ADDON:EditContactNote(index)
     local contact = self.settings.contacts[index];
     if (not contact) then
         return;
@@ -578,7 +409,7 @@ function private:EditContactNote(index)
     StaticPopup_Show(SET_CONTACT_NOTE, contact.recipient);
 end
 
-function private:SwapContacts(index1, index2)
+function ADDON:SwapContacts(index1, index2)
     if (index1 < 1 or index1 > (self.settings.columnCount * self.settings.rowCount)) then
         return;
     end
@@ -596,7 +427,7 @@ function private:SwapContacts(index1, index2)
     self:UpdateContactButtons();
 end
 
-function private:UpdateContactContainer()
+function ADDON:UpdateContactContainer()
     self.contactContainer:SetScale(self.settings.scale);
 
     local width = (CONTACT_BUTTON_SIZE + CONTACT_BUTTON_MARGIN) * self.settings.columnCount;
@@ -653,7 +484,7 @@ function private:UpdateContactContainer()
     UpdateUIPanelPositions(OpenMailFrame);
 end
 
-function private:BulkMailInboxSupport()
+function ADDON:BulkMailInboxSupport()
     if (not BulkMailInbox) then
         return;
     end
@@ -675,42 +506,21 @@ function private:BulkMailInboxSupport()
     end);
 end
 
-function private:CombineSettings(settings, defaultSettings)
-    for key, value in pairs(defaultSettings) do
-        if (settings[key] == nil) then
-            settings[key] = value;
-        elseif (type(settings[key]) == "table" and type(value) == "table") then
-            self:CombineSettings(settings[key], value);
+function ADDON:Load()
+    FireCallbacks(loginCallbacks)
+
+    local initUI = true
+    MailFrame:HookScript("OnShow", function()
+        if initUI then
+            CreateContactContainer()
+            FireCallbacks(loadUICallbacks)
+            self:CreateDragIcon();
+
+            self:UpdateContactContainer();
+            self:UpdateContactButtons();
+            initUI = false
         end
-    end
-end
-
-function private:LoadSettings()
-    local settingsScope = self.globalSettings.settingsScope;
-    if (settingsScope == "character") then
-        self.settings = self.characterSettings;
-    elseif (settingsScope == "global") then
-        self.settings = self.globalSettings;
-    else
-        self.settings = self.realmSettings;
-    end
-
-    self:CombineSettings(self.settings, defaultSettings);
-end
-
-function private:Load()
-    self:LoadSettings();
-
-    self:CreateContactContainer();
-    self:CreateEditContactPopup();
-    self:CreateDragIcon();
-
-    self:UpdateContactContainer();
-    self:UpdateContactButtons();
-
-    if (not MailFrame:GetScript("OnShow")) then
-        MailFrame:SetScript("OnShow", function() end);
-    end
+    end)
 
     MailFrame:HookScript("OnShow", function()
         local frameLevel = max(InboxFrame:GetFrameLevel(), SendMailFrame:GetFrameLevel());
@@ -719,142 +529,21 @@ function private:Load()
     end);
     MailFrame:HookScript("OnHide", function() self.contactContainer:Hide(); end);
 
-    self:AddSlashCommand(ADDON_NAME, function(...) self:OnSlashCommand(...) end, 'favoritecontacts', 'fc');
-
     self:BulkMailInboxSupport();
 end
 
-function private:OnSlashCommand(command, parameter1, parameter2, parameter3, parameter4)
-    if (command == "settingsscope") then
-        local settingsScope = parameter1;
-        if (settingsScope == "character" or settingsScope == "realm" or settingsScope == "global") then
-            self.globalSettings.settingsScope = settingsScope;
-
-            self:LoadSettings();
-            self:UpdateContactContainer();
-            self:UpdateContactButtons();
-
-            print(string.format("Favorite Contacts: " .. L["Settings scope changed to %s"], settingsScope));
-            return;
+function ADDON:HideButtions()
+    -- hide all buttons first before showing them again
+    for index = 1, (ADDON.settings.columnCount * ADDON.settings.rowCount) do
+        local button = _G[CONTACT_BUTTON .. index];
+        if (button) then
+            button:Hide();
         end
     end
-
-    if (command == "size") then
-        local columnCount = tonumber(parameter1);
-        local rowCount = tonumber(parameter2);
-        if (type(columnCount) == "number" and type(rowCount) == "number") then
-            for index = 1, (self.settings.columnCount * self.settings.rowCount) do
-                local button = _G[CONTACT_BUTTON .. index];
-                if (button) then
-                    button:Hide();
-                end
-            end
-
-            self.settings.columnCount = columnCount;
-            self.settings.rowCount = rowCount;
-
-            self:UpdateContactContainer();
-            self:UpdateContactButtons();
-            print(string.format("Favorite Contacts: " .. L["Size changed to %dx%d"], columnCount, rowCount));
-            return;
-        end
-    end
-
-    if (command == "contact") then
-        local index = tonumber(parameter1);
-        local recipient = tostring(parameter2);
-        local icon = tostring(parameter3);
-        if (type(index) == "number" and index >= 1) then
-            if (recipient and string.len(recipient) > 0) then
-                self.settings.contacts[index] = {
-                    recipient = recipient,
-                    icon = icon,
-                };
-                self:UpdateContactButton(index);
-                if (not icon or string.len(icon) == 0) then
-                    icon = "<empty>";
-                end
-                print(string.format("Favorite Contacts: " .. L["Contact added (Position: %d, Recipient: %s, Icon: %s)"], index, recipient, icon));
-                return;
-            else
-                self:DeleteContact(index, true);
-                print(string.format("Favorite Contacts: " .. L["Contact removed (Position: %d)"], index));
-                return;
-            end
-        end
-    end
-
-    if (command == "note") then
-        local index = tonumber(parameter1);
-        local note = tostring(parameter2);
-        if (type(index) == "number" and index >= 1) then
-            local contact = self.settings.contacts[index];
-            if (not contact) then
-                print(string.format("Favorite Contacts: " .. L["No Contact on position %d"], index));
-                return;
-            end
-            if (note and string.len(note) > 0) then
-                contact.note = note;
-                print(string.format("Favorite Contacts: " .. L["Note changed to %s (Position: %d)"], note, index));
-                return;
-            end
-            contact.note = nil;
-            print(string.format("Favorite Contacts: " .. L["Note removed (Position: %d)"], index));
-            return;
-        end
-    end
-
-    if (command == "position") then
-        local position = string.upper(tostring(parameter1));
-        if (position == "TOP" or position == "LEFT" or position == "BOTTOM" or position == "RIGHT") then
-            self.settings.position = position;
-            self:UpdateContactContainer();
-            self:UpdateContactButtons();
-            print(string.format("Favorite Contacts: " .. L["Position set to %s"], position));
-            return;
-        end
-    end
-
-    if (command == "scale") then
-        local scale = tonumber(parameter1);
-        if (type(scale) == "number" and scale > 0) then
-            self.settings.scale = scale;
-            self:UpdateContactContainer();
-            self:UpdateContactButtons();
-            print(string.format("Favorite Contacts: " .. L["Button scale factor set to %d"], scale));
-            return;
-        end
-    end
-
-    if (command == "clicktosend") then
-        local onOff = tostring(parameter1);
-        if (not onOff or string.len(onOff) == 0) then
-            self.settings.clickToSend = not self.settings.clickToSend;
-            if (self.settings.clickToSend) then
-                print(string.format("Favorite Contacts: " .. L["ClickToSend mode enabled"]));
-            else
-                print(string.format("Favorite Contacts: " .. L["ClickToSend mode disabled"]));
-            end
-            return;
-        end
-        if (onOff == "on") then
-            self.settings.clickToSend = true;
-            print(string.format("Favorite Contacts: " .. L["ClickToSend mode enabled"]));
-            return;
-        end
-        if (onOff == "off") then
-            self.settings.clickToSend = false;
-            print(string.format("Favorite Contacts: " .. L["ClickToSend mode disabled"]));
-            return;
-        end
-    end
-
-    print("Syntax:");
-    print("/fc size <column count> <rows count>");
-    print("/fc position (TOP | LEFT | BOTTOM | RIGHT)");
-    print("/fc scale <button scale factor>");
-    print("/fc contact <index> [<recipient> [<icon>]]");
-    print("/fc note <index> [<note>]");
-    print("/fc settingsscope [character|realm|global]");
-    print("/fc clicktosend [on|off]");
 end
+
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("PLAYER_LOGIN")
+frame:SetScript("OnEvent", function(self, event, arg1)
+    ADDON:Load()
+end)
