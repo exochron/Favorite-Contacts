@@ -12,7 +12,10 @@ Locals\Locals.xml
 Options.xml
 FavoriteContacts.lua
 Settings.lua
+UI\ContactContainer.lua
+UI\ContactButton.lua
 UI\EditPopup.xml
 UI\EditPopup.lua
 UI\DragCursor.lua
 SlashCommand.lua
+ThirdPartySupport.lua

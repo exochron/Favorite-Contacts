@@ -6,7 +6,7 @@ local ADDON_NAME, ADDON = ...
 local dragIcon
 
 local function SetDragIconWithCursor()
-    dragIcon:ClearAllPoints();
+    dragIcon:ClearAllPoints()
     dragIcon:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", GetCursorPosition())
 end
 
@@ -27,19 +27,19 @@ local function CreateDragIcon()
         SetDragIconWithCursor()
         dragIcon.timer = C_Timer.NewTicker(0.013, SetDragIconWithCursor) --0.013s = ~70fps
         --self.dragIcon:StartMoving()
-    end);
+    end)
 
     dragIcon:SetScript('OnHide', function()
         dragIcon.timer:Cancel()
-        --self.dragIcon:StopMovingOrSizing();
-    end);
+        --self.dragIcon:StopMovingOrSizing()
+    end)
 end
 ADDON:RegisterLoadUICallback(CreateDragIcon)
 
 function ADDON:StartDrag(index)
-    local contact = self.settings.contacts[index];
+    local contact = self.settings.contacts[index]
     if (not contact) then
-        return;
+        return
     end
 
     dragIcon.background:SetAtlas('')
@@ -50,4 +50,5 @@ end
 
 function ADDON:StopDrag(index)
     dragIcon:Hide()
+    ADDON:SetSelectedContact(0)
 end

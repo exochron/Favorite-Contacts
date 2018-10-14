@@ -9,7 +9,7 @@ local defaultSettings = {
     position = "RIGHT",
     scale = 1.0,
     clickToSend = false,
-};
+}
 
 function ADDON:ResetUISettings()
 end
@@ -17,19 +17,19 @@ end
 local function CombineSettings(settings, defaultSettings)
     for key, value in pairs(defaultSettings) do
         if (settings[key] == nil) then
-            settings[key] = value;
+            settings[key] = value
         elseif (type(value) == "table") and next(value) ~= nil then
             if type(settings[key]) ~= "table" then
                 settings[key] = {}
             end
-            CombineSettings(settings[key], value);
+            CombineSettings(settings[key], value)
         end
     end
 
     -- cleanup old still existing settings
     for key, _ in pairs(settings) do
         if (defaultSettings[key] == nil) then
-            settings[key] = nil;
+            settings[key] = nil
         end
     end
 end
