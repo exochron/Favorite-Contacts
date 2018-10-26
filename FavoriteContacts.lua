@@ -135,33 +135,39 @@ function ADDON:SwapContacts(index1, index2)
 end
 
 function ADDON:SetSize(columnCount, rowCount)
-    ADDON.settings.columnCount = columnCount
-    ADDON.settings.rowCount = rowCount
+    if ADDON.settings.columnCount ~= columnCount or ADDON.settings.rowCount ~= rowCount then
+        ADDON.settings.columnCount = columnCount
+        ADDON.settings.rowCount = rowCount
 
-    if isUILoaded then
-        -- hide all buttons first before showing them again
-        for _, button in pairs(self.contactButtons) do
-            button:Hide();
+        if isUILoaded then
+            -- hide all buttons first before showing them again
+            for _, button in pairs(self.contactButtons) do
+                button:Hide();
+            end
+
+            ADDON:UpdateContactContainer()
+            ADDON:UpdateContactButtons()
         end
-
-        ADDON:UpdateContactContainer()
-        ADDON:UpdateContactButtons()
     end
 end
 
 function ADDON:SetPosition(position)
-    ADDON.settings.position = position
-    if isUILoaded then
-        ADDON:UpdateContactContainer()
-        ADDON:UpdateContactButtons()
+    if ADDON.settings.position ~= position then
+        ADDON.settings.position = position
+        if isUILoaded then
+            ADDON:UpdateContactContainer()
+            ADDON:UpdateContactButtons()
+        end
     end
 end
 
 function ADDON:SetScale(scale)
-    ADDON.settings.scale = scale
-    if isUILoaded then
-        ADDON:UpdateContactContainer()
-        ADDON:UpdateContactButtons()
+    if ADDON.settings.scale ~= scale then
+        ADDON.settings.scale = scale
+        if isUILoaded then
+            ADDON:UpdateContactContainer()
+            ADDON:UpdateContactButtons()
+        end
     end
 end
 

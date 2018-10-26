@@ -12,6 +12,11 @@ local defaultSettings = {
 }
 
 function ADDON:ResetUISettings()
+    ADDON.settings.columnCount = 2
+    ADDON.settings.rowCount = 9
+    ADDON.settings.position = "RIGHT"
+    ADDON.settings.scale = "AUTO"
+    ADDON.settings.clickToSend = false
 end
 
 local function CombineSettings(settings, defaultSettings)
