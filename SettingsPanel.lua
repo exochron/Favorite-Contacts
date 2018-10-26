@@ -119,7 +119,8 @@ local function RefreshHandler(frame)
         frame.scaleRadioAuto:GetParent():HandleGroup(frame.scaleRadioAuto)
     else
         frame.scaleRadioManual:GetParent():HandleGroup(frame.scaleRadioManual)
-        frame.scaleEditManual:SetText(scale)
+        frame.scaleEditManual:SetNumber(scale)
+        frame.scaleEditManual:SetCursorPosition(0)
     end
 
     local click = ADDON.settings.clickToSend
