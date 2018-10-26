@@ -7,7 +7,7 @@ local defaultSettings = {
     columnCount = 2,
     rowCount = 9,
     position = "RIGHT",
-    scale = 1.0,
+    scale = "AUTO",
     clickToSend = false,
 }
 

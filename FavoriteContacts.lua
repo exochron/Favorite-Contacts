@@ -1,7 +1,6 @@
 local ADDON_NAME, ADDON = ...
 
 -- TODO:
---  - auto sclae
 --  - settings panel
 
 local CONFIRM_DELETE_CONTACT = ADDON_NAME .. "_CONFIRM_DELETE_CONTACT"
@@ -9,37 +8,32 @@ local CONFIRM_DELETE_CONTACT = ADDON_NAME .. "_CONFIRM_DELETE_CONTACT"
 ADDON.contactContainer = nil
 ADDON.contactButtons = {}
 
+local isUILoaded
+
 -- region callbacks
 local loginCallbacks, loadUICallbacks = {}, {}
 function ADDON:RegisterLoginCallback(func)
     table.insert(loginCallbacks, func)
 end
+
 function ADDON:RegisterLoadUICallback(func)
     table.insert(loadUICallbacks, func)
 end
+
 local function FireCallbacks(callbacks)
     for _, callback in pairs(callbacks) do
         callback()
     end
 end
+
 --endregion
 
 function ADDON:SetTexture(texture, iconName)
-    if (iconName:sub(1,9) == "raceicon-") then
+    if (iconName:sub(1, 9) == "raceicon-") then
         texture:SetAtlas(iconName)
     else
         texture:SetTexture("INTERFACE\\ICONS\\" .. iconName)
     end
-end
-
-function ADDON:SendMail()
-    if (not SendMailMailButton:IsVisible() or
-        not SendMailMailButton:IsEnabled())
-    then
-        return
-    end
-
-    SendMailMailButton:Click()
 end
 
 function ADDON:SetSelectedContact(selectedIndex)
@@ -66,13 +60,15 @@ function ADDON:SetEnableContacts(enabled)
 end
 
 function ADDON:SetContact(index, recipient, icon, note)
-    self.settings.contacts[index] = self.settings.contacts[index] or { }
+    self.settings.contacts[index] = self.settings.contacts[index] or {}
     local contact = self.settings.contacts[index]
     contact.recipient = recipient
     contact.icon = icon
     contact.note = note
 
-    self:UpdateContactButton(index)
+    if isUILoaded then
+        self:UpdateContactButton(index)
+    end
 end
 
 StaticPopupDialogs[CONFIRM_DELETE_CONTACT] = {
@@ -88,17 +84,23 @@ StaticPopupDialogs[CONFIRM_DELETE_CONTACT] = {
 
 function ADDON:DeleteContact(index, confirmed)
     if (not confirmed) then
-        self:SetSelectedContact(index)
-        self:SetEnableContacts(false)
+        if isUILoaded then
+            self:SetSelectedContact(index)
+            self:SetEnableContacts(false)
+        end
 
         StaticPopupDialogs[CONFIRM_DELETE_CONTACT].OnAccept = function()
             self:DeleteContact(index, true)
-            self:SetSelectedContact(0)
-            self:SetEnableContacts(true)
+            if isUILoaded then
+                self:SetSelectedContact(0)
+                self:SetEnableContacts(true)
+            end
         end
         StaticPopupDialogs[CONFIRM_DELETE_CONTACT].OnCancel = function()
-            self:SetSelectedContact(0)
-            self:SetEnableContacts(true)
+            if isUILoaded then
+                self:SetSelectedContact(0)
+                self:SetEnableContacts(true)
+            end
         end
         StaticPopup_Show(CONFIRM_DELETE_CONTACT)
         return
@@ -106,7 +108,9 @@ function ADDON:DeleteContact(index, confirmed)
 
     self.settings.contacts[index] = nil
 
-    self:UpdateContactButton(index)
+    if isUILoaded then
+        self:UpdateContactButton(index)
+    end
 end
 
 function ADDON:SwapContacts(index1, index2)
@@ -124,18 +128,50 @@ function ADDON:SwapContacts(index1, index2)
     self.settings.contacts[index1] = contact2
     self.settings.contacts[index2] = contact1
 
-    self:UpdateContactButton(index1)
-    self:UpdateContactButton(index2)
+    if isUILoaded then
+        self:UpdateContactButton(index1)
+        self:UpdateContactButton(index2)
+    end
+end
+
+function ADDON:SetSize(columnCount, rowCount)
+    ADDON.settings.columnCount = columnCount
+    ADDON.settings.rowCount = rowCount
+
+    if isUILoaded then
+        -- hide all buttons first before showing them again
+        for _, button in pairs(self.contactButtons) do
+            button:Hide();
+        end
+
+        ADDON:UpdateContactContainer()
+        ADDON:UpdateContactButtons()
+    end
+end
+
+function ADDON:SetPosition(position)
+    ADDON.settings.position = position
+    if isUILoaded then
+        ADDON:UpdateContactContainer()
+        ADDON:UpdateContactButtons()
+    end
+end
+
+function ADDON:SetScale(scale)
+    ADDON.settings.scale = scale
+    if isUILoaded then
+        ADDON:UpdateContactContainer()
+        ADDON:UpdateContactButtons()
+    end
 end
 
 function ADDON:Load()
     FireCallbacks(loginCallbacks)
 
-    local initUI = true
     MailFrame:HookScript("OnShow", function()
-        if initUI then
+        if not isUILoaded then
             FireCallbacks(loadUICallbacks)
-            initUI = false
+            isUILoaded = true
         end
     end)
 

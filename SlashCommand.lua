@@ -2,26 +2,19 @@ local ADDON_NAME, ADDON = ...
 
 SLASH_FAVORITECONTACTS1, SLASH_FAVORITECONTACTS2 = '/favoritecontacts', '/fc'
 function SlashCmdList.FAVORITECONTACTS(msg)
-    msg = msg:lower()
 
     local L = ADDON.L
     local command, parameter1, parameter2
     if msg then
-        command, parameter1, parameter2 = unpack(split(msg, " "))
+        command, parameter1, parameter2 = strsplit(" ", msg)
+        command = command:lower()
     end
 
     if (command == "size") then
         local columnCount = tonumber(parameter1)
         local rowCount = tonumber(parameter2)
         if (type(columnCount) == "number" and type(rowCount) == "number") then
-            ADDON.settings.columnCount = columnCount
-            ADDON.settings.rowCount = rowCount
-
-            -- hide all buttons first before showing them again
-            ADDON:HideButtons()
-
-            ADDON:UpdateContactContainer()
-            ADDON:UpdateContactButtons()
+            ADDON:SetSize(columnCount, rowCount)
             print(string.format("Favorite Contacts: " .. L["Size changed to %dx%d"], columnCount, rowCount))
             return
         end
@@ -33,11 +26,7 @@ function SlashCmdList.FAVORITECONTACTS(msg)
         local icon = tostring(parameter3)
         if (type(index) == "number" and index >= 1) then
             if (recipient and string.len(recipient) > 0) then
-                ADDON.settings.contacts[index] = {
-                    recipient = recipient,
-                    icon = icon,
-                }
-                ADDON:UpdateContactButton(index)
+                ADDON:SetContact(index, recipient, icon)
                 if (not icon or string.len(icon) == 0) then
                     icon = "<empty>"
                 end
@@ -74,9 +63,7 @@ function SlashCmdList.FAVORITECONTACTS(msg)
     if (command == "position") then
         local position = string.upper(tostring(parameter1))
         if (position == "TOP" or position == "LEFT" or position == "BOTTOM" or position == "RIGHT") then
-            ADDON.settings.position = position
-            ADDON:UpdateContactContainer()
-            ADDON:UpdateContactButtons()
+            ADDON:SetPosition(position)
             print(string.format("Favorite Contacts: " .. L["Position set to %s"], position))
             return
         end
@@ -84,10 +71,8 @@ function SlashCmdList.FAVORITECONTACTS(msg)
 
     if (command == "scale") then
         local scale = tonumber(parameter1)
-        if (type(scale) == "number" and scale > 0) then
-            ADDON.settings.scale = scale
-            ADDON:UpdateContactContainer()
-            ADDON:UpdateContactButtons()
+        if (parameter1 == "AUTO" or (type(scale) == "number" and scale > 0)) then
+            ADDON:SetScale(scale or parameter1)
             print(string.format("Favorite Contacts: " .. L["Button scale factor set to %d"], scale))
             return
         end
@@ -117,8 +102,9 @@ function SlashCmdList.FAVORITECONTACTS(msg)
     end
 
     -- open double to prevent stupid interface bug
-    InterfaceOptionsFrame_OpenToCategory(ADDON_NAME)
-    InterfaceOptionsFrame_OpenToCategory(ADDON_NAME)
+    local title = GetAddOnMetadata(ADDON_NAME, "Title")
+    InterfaceOptionsFrame_OpenToCategory(title)
+    InterfaceOptionsFrame_OpenToCategory(title)
 
     --print("Syntax:")
     --print("/fc size <column count> <rows count>")

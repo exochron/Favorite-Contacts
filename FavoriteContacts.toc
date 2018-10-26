@@ -9,7 +9,6 @@ Libs\LibStub\LibStub.lua
 Libs\MSA-DropDownMenu-1.0\MSA-DropDownMenu-1.0.lua
 
 Locals\Locals.xml
-Options.xml
 FavoriteContacts.lua
 Settings.lua
 UI\ContactContainer.lua
@@ -18,4 +17,5 @@ UI\EditPopup.xml
 UI\EditPopup.lua
 UI\DragCursor.lua
 SlashCommand.lua
+SettingsPanel.lua
 ThirdPartySupport.lua

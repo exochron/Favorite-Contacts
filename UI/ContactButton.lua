@@ -8,6 +8,16 @@ local contextMenu
 local contextMenuIndex
 local currentDragContact = 0
 
+local function SendMail()
+    if (not SendMailMailButton:IsVisible() or
+            not SendMailMailButton:IsEnabled())
+    then
+        return
+    end
+
+    SendMailMailButton:Click()
+end
+
 local function OnContactButtonClicked(button, buttonType)
     if (currentDragContact ~= 0) then
         ADDON:StopDrag(button.index)
@@ -23,7 +33,7 @@ local function OnContactButtonClicked(button, buttonType)
                 SendMailSubjectEditBox:SetFocus()
 
                 if (ADDON.settings.clickToSend) then
-                    ADDON:SendMail()
+                    SendMail()
                 end
             end
         end
