@@ -1,8 +1,5 @@
 local ADDON_NAME, ADDON = ...
 
--- TODO:
---  - settings panel
-
 local CONFIRM_DELETE_CONTACT = ADDON_NAME .. "_CONFIRM_DELETE_CONTACT"
 
 ADDON.contactContainer = nil

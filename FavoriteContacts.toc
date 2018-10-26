@@ -2,7 +2,7 @@
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox for easy access to your favorite contacts
 ## Author: lqpbgjuc, eXochron
-## Version: 1.3
+## Version: 2.0
 ## SavedVariables: FavoriteContactsSettings
 
 Libs\LibStub\LibStub.lua
