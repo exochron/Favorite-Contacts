@@ -1,11 +1,21 @@
-## Interface: 70300
+## Interface: 80000
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox for easy access to your favorite contacts
 ## Author: lqpbgjuc, eXochron
-## Version: 1.2.2
+## Version: 2.0
 ## SavedVariables: FavoriteContactsSettings
 
-CoreFramework\CoreFramework.xml
+Libs\LibStub\LibStub.lua
+Libs\MSA-DropDownMenu-1.0\MSA-DropDownMenu-1.0.lua
+
 Locals\Locals.xml
-FavoriteContacts.xml
 FavoriteContacts.lua
+Settings.lua
+UI\ContactContainer.lua
+UI\ContactButton.lua
+UI\EditPopup.xml
+UI\EditPopup.lua
+UI\DragCursor.lua
+SlashCommand.lua
+SettingsPanel.lua
+ThirdPartySupport.lua
