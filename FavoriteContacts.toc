@@ -6,6 +6,7 @@
 ## SavedVariables: FavoriteContactsSettings
 
 Libs\LibStub\LibStub.lua
+Libs\AceGUI-3.0\AceGUI-3.0.xml
 Libs\MSA-DropDownMenu-1.0\MSA-DropDownMenu-1.0.lua
 
 Locals\Locals.xml

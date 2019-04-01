@@ -75,6 +75,10 @@ local function CreateEditContactPopup()
     popup.BorderBox.NoteLabel:SetText(L["Contact Note:"])
 
     popup:SetScript("OnShow", function(sender)
+
+        -- see https://github.com/tomrus88/BlizzardInterfaceCode/blob/c1e5ba067e4ef6b72a824b57b2d104c65c047a3b/Interface/GlueXML/CharacterCreate.lua
+        -- for new race and class icons
+
         iconFiles = {
             -- class
             "ClassIcon_DeathKnight", "ClassIcon_DemonHunter", "ClassIcon_Druid", "ClassIcon_Hunter", "ClassIcon_Mage", "ClassIcon_Monk",
@@ -90,6 +94,7 @@ local function CreateEditContactPopup()
             "raceicon-voidelf-female", "raceicon-voidelf-male",
             "raceicon-lightforged-female", "raceicon-lightforged-male",
             "raceicon-darkirondwarf-female", "raceicon-darkirondwarf-male",
+            "raceicon-kultiran-female", "raceicon-kultiran-male",
             "raceicon-pandaren-female", "raceicon-pandaren-male",
             "raceicon-orc-female", "raceicon-orc-male",
             "raceicon-tauren-female", "raceicon-tauren-male",
@@ -100,6 +105,7 @@ local function CreateEditContactPopup()
             "raceicon-highmountain-female", "raceicon-highmountain-male",
             "raceicon-nightborne-female", "raceicon-nightborne-male",
             "raceicon-magharorc-female", "raceicon-magharorc-male",
+            "raceicon-zandalari-female", "raceicon-zandalari-male",
 
             --profession
             "inv_misc_gem_01",
@@ -116,7 +122,7 @@ local function CreateEditContactPopup()
             "trade_archaeology",
             "inv_misc_food_15",
             "Trade_Fishing",
-            "spell_holy_sealofsacrifice",
+            --"spell_holy_sealofsacrifice", -- first aid
 
             -- faction
             "INV_BannerPVP_01",
