@@ -3,11 +3,14 @@ local ADDON_NAME, ADDON = ...
 local CONTACT_BUTTON_SIZE = 36
 local CONTACT_BUTTON_MARGIN = 12
 
+local AceGUI = LibStub("AceGUI-3.0")
+
 local function CreateContainer()
-    local contactContainer = CreateFrame("Frame", nil, UIParent)
-    contactContainer:SetToplevel(true)
-    contactContainer:SetFrameStrata("HIGH")
-    contactContainer:Hide()
+    local contactContainer = AceGUI:Create("SimpleGroup")
+    contactContainer:SetLayout()
+    contactContainer.frame:SetToplevel(true)
+    contactContainer.frame:SetFrameStrata("HIGH")
+    contactContainer.content:Hide()
 
     ADDON.contactContainer = contactContainer
 end
@@ -18,7 +21,8 @@ function ADDON:UpdateContactContainer()
 
     local width = ((CONTACT_BUTTON_SIZE + CONTACT_BUTTON_MARGIN) * self.settings.columnCount) - CONTACT_BUTTON_MARGIN
     local height = ((CONTACT_BUTTON_SIZE + CONTACT_BUTTON_MARGIN) * self.settings.rowCount) - CONTACT_BUTTON_MARGIN
-    self.contactContainer:SetSize(width, height)
+    self.contactContainer:SetWidth(width)
+    self.contactContainer:SetHeight(height)
 
     if scale == "AUTO" then
         if position == "TOP" or position == "BOTTOM" then
@@ -27,7 +31,7 @@ function ADDON:UpdateContactContainer()
             scale = MailFrame:GetScale() * (MailFrame:GetHeight() - 4) / height
         end
     end
-    self.contactContainer:SetScale(scale)
+    self.contactContainer.frame:SetScale(scale)
 
     if (position == "LEFT") then
         MailFrame:SetAttribute("UIPanelLayout-xoffset", width * scale + CONTACT_BUTTON_MARGIN)

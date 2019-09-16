@@ -133,7 +133,7 @@ local function BuildFrame()
     frame.scaleEditManual:SetPoint("LEFT", frame.scaleRadioManual.frame, "RIGHT")
     frame.scaleEditManual:SetDisabled(true)
 
-    yOffset = yOffset - 30
+    yOffset = yOffset - 40
     BuildHeader(frame, L.SETTING_HEAD_INTERACTION, yOffset)
 
     yOffset = yOffset - 20

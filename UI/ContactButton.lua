@@ -50,7 +50,7 @@ end
 local function CreateContactButton(index)
     local button = ADDON.contactButtons[index]
     if (not button) then
-        button = CreateFrame("CheckButton", CONTACT_BUTTON .. index, ADDON.contactContainer, "PopupButtonTemplate", index)
+        button = CreateFrame("CheckButton", CONTACT_BUTTON .. index, ADDON.contactContainer.content, "PopupButtonTemplate", index)
     end
 
     button:SetToplevel(true)
@@ -82,7 +82,7 @@ local function CreateContactButton(index)
         if (sender:IsEnabled()) then
             ADDON:StopDrag(sender.index)
 
-            if (false == ADDON.contactContainer:IsMouseOver()) then
+            if (false == ADDON.contactContainer.content:IsMouseOver()) then
                 ADDON:DeleteContact(currentDragContact)
                 currentDragContact = 0
             end
@@ -125,7 +125,7 @@ local function SetContactButtonPosition(button)
 
     button:ClearAllPoints()
     if (index == 1) then
-        button:SetPoint("TOPLEFT", ADDON.contactContainer, "TOPLEFT", 0, -1)
+        button:SetPoint("TOPLEFT", ADDON.contactContainer.content, "TOPLEFT", 0, -1)
     elseif (mod(index, ADDON.settings.rowCount) == 1) then
         local relativeTo = ADDON.contactButtons[index - ADDON.settings.rowCount]
         button:SetPoint("LEFT", relativeTo, "RIGHT", CONTACT_BUTTON_MARGIN, 0)
@@ -201,6 +201,6 @@ end
 ADDON:RegisterLoadUICallback(function()
     ADDON:UpdateContactButtons()
 
-    contextMenu = MSA_DropDownMenu_Create(CONTACT_BUTTON .. "ContextMenu", ADDON.contactContainer)
+    contextMenu = MSA_DropDownMenu_Create(CONTACT_BUTTON .. "ContextMenu", ADDON.contactContainer.content)
     MSA_DropDownMenu_Initialize(contextMenu, function(sender, level) InitButtonMenu(sender, level) end, "MENU")
 end)

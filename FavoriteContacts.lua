@@ -170,7 +170,6 @@ end
 
 function ADDON:Load()
     FireCallbacks(loginCallbacks)
-
     MailFrame:HookScript("OnShow", function()
         if not isUILoaded then
             FireCallbacks(loadUICallbacks)
@@ -180,10 +179,14 @@ function ADDON:Load()
 
     MailFrame:HookScript("OnShow", function()
         local frameLevel = max(InboxFrame:GetFrameLevel(), SendMailFrame:GetFrameLevel())
-        self.contactContainer:SetFrameLevel(frameLevel)
-        self.contactContainer:Show()
+        self.contactContainer.frame:SetFrameLevel(frameLevel)
+        self.contactContainer.frame:Show()
+        self.contactContainer.content:Show()
     end)
-    MailFrame:HookScript("OnHide", function() self.contactContainer:Hide() end)
+    MailFrame:HookScript("OnHide", function()
+        self.contactContainer.frame:Hide()
+        self.contactContainer.content:Hide()
+    end)
 end
 
 local frame = CreateFrame("Frame")
