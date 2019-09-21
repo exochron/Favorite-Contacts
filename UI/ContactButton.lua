@@ -63,6 +63,7 @@ local function CreateContactButton(index)
 
     button:SetImageSize(CONTACT_BUTTON_SIZE, CONTACT_BUTTON_SIZE)
     button:SetHeight(CONTACT_BUTTON_SIZE)
+    button:SetWidth(CONTACT_BUTTON_SIZE + 3)
 
     button.image:SetPoint("TOP", 0, 0)
 

@@ -1,6 +1,7 @@
 local ADDON_NAME, ADDON = ...
 
 local CONTACT_BUTTON_SIZE = 36
+local CONTACT_BUTTON_MARGIN = 3
 
 local AceGUI = LibStub("AceGUI-3.0")
 
@@ -18,8 +19,8 @@ function ADDON:UpdateContactContainer()
     local scale = self.settings.scale
     local position = self.settings.position
 
-    local width = CONTACT_BUTTON_SIZE  * self.settings.columnCount
-    local height = CONTACT_BUTTON_SIZE * self.settings.rowCount + 20
+    local width = ((CONTACT_BUTTON_SIZE + CONTACT_BUTTON_MARGIN) * self.settings.columnCount) + 1
+    local height = ((CONTACT_BUTTON_SIZE + CONTACT_BUTTON_MARGIN) * self.settings.rowCount) + 1
     self.contactContainer:SetWidth(width)
     self.contactContainer:SetHeight(height)
 
@@ -27,30 +28,30 @@ function ADDON:UpdateContactContainer()
         if position == "TOP" or position == "BOTTOM" then
             scale = MailFrame:GetScale() * MailFrame:GetWidth() / width
         else
-            scale = MailFrame:GetScale() * (MailFrame:GetHeight() - 4) / height
+            scale = MailFrame:GetScale() * (MailFrame:GetHeight() + 5) / height
         end
     end
     self.contactContainer.frame:SetScale(scale)
 
     if (position == "LEFT") then
-        MailFrame:SetAttribute("UIPanelLayout-xoffset", width * scale)
+        MailFrame:SetAttribute("UIPanelLayout-xoffset", width * scale + CONTACT_BUTTON_MARGIN)
         MailFrame:SetAttribute("UIPanelLayout-yoffset", 0)
         MailFrame:SetAttribute("UIPanelLayout-extraWidth", 0)
         MailFrame:SetAttribute("UIPanelLayout-extraHeight", 0)
 
         self.contactContainer:ClearAllPoints()
-        self.contactContainer:SetPoint("TOPRIGHT", MailFrame, "TOPLEFT", 0, 0)
+        self.contactContainer:SetPoint("TOPRIGHT", MailFrame, "TOPLEFT", -CONTACT_BUTTON_MARGIN, 3)
 
         OpenMailFrame:ClearAllPoints()
         OpenMailFrame:SetPoint("TOPLEFT", InboxFrame, "TOPRIGHT", 0, 0)
     elseif (position == "TOP") then
         MailFrame:SetAttribute("UIPanelLayout-xoffset", 0)
-        MailFrame:SetAttribute("UIPanelLayout-yoffset", -(height * scale))
+        MailFrame:SetAttribute("UIPanelLayout-yoffset", -((height * scale) + CONTACT_BUTTON_MARGIN))
         MailFrame:SetAttribute("UIPanelLayout-extraWidth", 0)
         MailFrame:SetAttribute("UIPanelLayout-extraHeight", 0)
 
         self.contactContainer:ClearAllPoints()
-        self.contactContainer:SetPoint("BOTTOMLEFT", MailFrame, "TOPLEFT", 0, 0)
+        self.contactContainer:SetPoint("BOTTOMLEFT", MailFrame, "TOPLEFT", 0, CONTACT_BUTTON_MARGIN)
 
         OpenMailFrame:ClearAllPoints()
         OpenMailFrame:SetPoint("TOPLEFT", InboxFrame, "TOPRIGHT", 0, 0)
@@ -61,21 +62,21 @@ function ADDON:UpdateContactContainer()
         MailFrame:SetAttribute("UIPanelLayout-extraHeight", height * scale)
 
         self.contactContainer:ClearAllPoints()
-        self.contactContainer:SetPoint("TOPLEFT", MailFrameTab1, "BOTTOMLEFT", 0, 0)
+        self.contactContainer:SetPoint("TOPLEFT", MailFrameTab1, "BOTTOMLEFT", 0, -CONTACT_BUTTON_MARGIN)
 
         OpenMailFrame:ClearAllPoints()
         OpenMailFrame:SetPoint("TOPLEFT", InboxFrame, "TOPRIGHT", 0, 0)
     else
         MailFrame:SetAttribute("UIPanelLayout-xoffset", 0)
         MailFrame:SetAttribute("UIPanelLayout-yoffset", 0)
-        MailFrame:SetAttribute("UIPanelLayout-extraWidth", width * scale)
+        MailFrame:SetAttribute("UIPanelLayout-extraWidth", width * scale + CONTACT_BUTTON_MARGIN)
         MailFrame:SetAttribute("UIPanelLayout-extraHeight", 0)
 
         self.contactContainer:ClearAllPoints()
-        self.contactContainer:SetPoint("TOPLEFT", MailFrame, "TOPRIGHT", 0, 0)
+        self.contactContainer:SetPoint("TOPLEFT", MailFrame, "TOPRIGHT", CONTACT_BUTTON_MARGIN, 3)
 
         OpenMailFrame:ClearAllPoints()
-        OpenMailFrame:SetPoint("TOPLEFT", InboxFrame, "TOPRIGHT", width * scale, 0)
+        OpenMailFrame:SetPoint("TOPLEFT", InboxFrame, "TOPRIGHT", width * scale + CONTACT_BUTTON_MARGIN, 0)
     end
 
     UpdateUIPanelPositions(MailFrame)
