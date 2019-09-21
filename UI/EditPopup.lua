@@ -167,14 +167,12 @@ local function CreateEditContactPopup()
 
         ADDON:SetContact(index, recipient, icon, note)
 
-        ADDON:SetSelectedContact(-1)
         ADDON:SetEnableContacts(true)
     end)
 
     popup.BorderBox.CancelButton:SetScript("OnClick", function()
         popup:Hide()
 
-        ADDON:SetSelectedContact(-1)
         ADDON:SetEnableContacts(true)
     end)
 end
@@ -199,7 +197,6 @@ function ADDON:ShowEditContactPopup(index)
     popup:Show()
     nameEdit:SetFocus()
 
-    self:SetSelectedContact(popup.index)
     self:SetEnableContacts(false)
 
     UpdateEditContactPopup()

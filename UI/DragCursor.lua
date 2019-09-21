@@ -50,5 +50,4 @@ end
 
 function ADDON:StopDrag()
     dragIcon:Hide()
-    ADDON:SetSelectedContact(0)
 end

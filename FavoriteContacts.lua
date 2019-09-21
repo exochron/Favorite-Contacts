@@ -7,7 +7,7 @@ ADDON.contactButtons = {}
 
 local isUILoaded
 
--- region callbacks
+--region callbacks
 local loginCallbacks, loadUICallbacks = {}, {}
 function ADDON:RegisterLoginCallback(func)
     table.insert(loginCallbacks, func)
@@ -22,7 +22,6 @@ local function FireCallbacks(callbacks)
         callback()
     end
 end
-
 --endregion
 
 function ADDON:SetTexture(texture, iconName)
@@ -30,29 +29,13 @@ function ADDON:SetTexture(texture, iconName)
         texture:SetAtlas(iconName)
     else
         texture:SetTexture("INTERFACE\\ICONS\\" .. iconName)
-    end
-end
-
-function ADDON:SetSelectedContact(selectedIndex)
-    for _, contactButton in pairs(ADDON.contactButtons) do
-        contactButton:SetChecked(false)
-    end
-
-    if (selectedIndex >= 1 and selectedIndex <= (self.settings.columnCount * self.settings.rowCount)) then
-        local button = ADDON.contactButtons[selectedIndex]
-        button:SetChecked(true)
+        texture:SetTexCoord(0, 1, 0, 1)
     end
 end
 
 function ADDON:SetEnableContacts(enabled)
     for _, button in pairs(ADDON.contactButtons) do
-        button:SetEnabled(enabled)
-
-        if (enabled) then
-            button.icon:SetAlpha(1.0)
-        else
-            button.icon:SetAlpha(0.5)
-        end
+        button:SetDisabled(not enabled)
     end
 end
 
@@ -82,20 +65,17 @@ StaticPopupDialogs[CONFIRM_DELETE_CONTACT] = {
 function ADDON:DeleteContact(index, confirmed)
     if (not confirmed) then
         if isUILoaded then
-            self:SetSelectedContact(index)
             self:SetEnableContacts(false)
         end
 
         StaticPopupDialogs[CONFIRM_DELETE_CONTACT].OnAccept = function()
             self:DeleteContact(index, true)
             if isUILoaded then
-                self:SetSelectedContact(0)
                 self:SetEnableContacts(true)
             end
         end
         StaticPopupDialogs[CONFIRM_DELETE_CONTACT].OnCancel = function()
             if isUILoaded then
-                self:SetSelectedContact(0)
                 self:SetEnableContacts(true)
             end
         end
@@ -137,10 +117,9 @@ function ADDON:SetSize(columnCount, rowCount)
         ADDON.settings.rowCount = rowCount
 
         if isUILoaded then
-            -- hide all buttons first before showing them again
-            for _, button in pairs(self.contactButtons) do
-                button:Hide();
-            end
+            -- clear all buttons and generate them again
+            self.contactContainer:ReleaseChildren()
+            self.contactButtons = {}
 
             ADDON:UpdateContactContainer()
             ADDON:UpdateContactButtons()
@@ -168,7 +147,10 @@ function ADDON:SetScale(scale)
     end
 end
 
-function ADDON:Load()
+local frame = CreateFrame("Frame")
+frame:RegisterEvent("PLAYER_LOGIN")
+frame:SetScript("OnEvent", function(self, event, arg1)
+
     FireCallbacks(loginCallbacks)
     MailFrame:HookScript("OnShow", function()
         if not isUILoaded then
@@ -179,18 +161,10 @@ function ADDON:Load()
 
     MailFrame:HookScript("OnShow", function()
         local frameLevel = max(InboxFrame:GetFrameLevel(), SendMailFrame:GetFrameLevel())
-        self.contactContainer.frame:SetFrameLevel(frameLevel)
-        self.contactContainer.frame:Show()
-        self.contactContainer.content:Show()
+        ADDON.contactContainer.frame:SetFrameLevel(frameLevel)
+        ADDON.contactContainer.frame:Show()
     end)
     MailFrame:HookScript("OnHide", function()
-        self.contactContainer.frame:Hide()
-        self.contactContainer.content:Hide()
+        ADDON.contactContainer.frame:Hide()
     end)
-end
-
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("PLAYER_LOGIN")
-frame:SetScript("OnEvent", function(self, event, arg1)
-    ADDON:Load()
 end)
