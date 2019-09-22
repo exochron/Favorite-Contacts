@@ -1,6 +1,7 @@
 ﻿local ADDON_NAME, ADDON = ...
 
-local L = ADDON.L or {}
+ADDON.L = {}
+local L = ADDON.L
 
 L["Are you sure that you want to delete this Contact?"] = "Are you sure that you want to delete this Contact?"
 L["Button scale factor set to %d"] = "Button scale factor set to %d"
@@ -31,5 +32,3 @@ L["SETTING_ROW_COUNT_LABEL"] = "Number of rows"
 L["SETTING_SCALE_AUTO"] = "Automatic"
 L["SETTING_SCALE_LABEL"] = "Size factor"
 L["SETTING_SCALE_MANUAL"] = "Manual"
-
-ADDON.L = L
