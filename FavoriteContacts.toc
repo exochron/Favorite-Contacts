@@ -12,7 +12,7 @@ Libs\MSA-DropDownMenu-1.0\MSA-DropDownMenu-1.0.lua
 Locals\Locals.xml
 FavoriteContacts.lua
 Settings.lua
-Icons.lua
+Icons.db.lua
 UI\Functions.lua
 UI\ContactContainer.lua
 UI\ContactButton.lua

@@ -27,7 +27,7 @@ local function UpdateEditContactPopup()
             buttonIcon:SetAtlas("")
             button:Hide()
         end
-        if (popup.icon == texture) then
+        if (popup.BorderBox.IconName:GetText() == texture) then
             button:SetChecked(true)
         else
             button:SetChecked(false)
@@ -38,8 +38,7 @@ local function UpdateEditContactPopup()
 end
 
 local function EditContactPopupSelectTexture(iconIndex)
-    popup.icon = ADDON.iconFiles[iconIndex]
-    popup.BorderBox.IconName:SetText(popup.icon)
+    popup.BorderBox.IconName:SetText(ADDON.iconFiles[iconIndex])
     UpdateEditContactPopup()
 end
 
@@ -117,7 +116,6 @@ function ADDON:ShowEditContactPopup(index)
     popup.index = index
 
     local contact = self.settings.contacts[index] or {}
-    popup.icon = contact.icon or CONTACT_DEFAULT_ICON
 
     local nameEdit = popup.BorderBox.ContactNameEditBox
     nameEdit:SetText(contact.recipient or "")
@@ -126,12 +124,11 @@ function ADDON:ShowEditContactPopup(index)
     noteEdit:SetText(contact.note or "")
 
     local iconEdit = popup.BorderBox.IconName
-    iconEdit:SetText(popup.icon or "")
+    iconEdit:SetText(contact.icon or CONTACT_DEFAULT_ICON)
 
+    UpdateEditContactPopup()
     popup:Show()
     nameEdit:SetFocus()
 
     self:SetEnableContacts(false)
-
-    UpdateEditContactPopup()
 end
