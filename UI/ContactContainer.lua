@@ -86,4 +86,13 @@ end
 ADDON:RegisterLoadUICallback(function()
     CreateContainer()
     ADDON:UpdateContactContainer()
+
+    MailFrame:HookScript("OnShow", function()
+        local frameLevel = max(InboxFrame:GetFrameLevel(), SendMailFrame:GetFrameLevel())
+        ADDON.contactContainer.frame:SetFrameLevel(frameLevel)
+        ADDON.contactContainer.frame:Show()
+    end)
+    MailFrame:HookScript("OnHide", function()
+        ADDON.contactContainer.frame:Hide()
+    end)
 end)

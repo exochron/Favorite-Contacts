@@ -149,7 +149,7 @@ local function CreateForm()
             icon = CONTACT_DEFAULT_ICON
         end
 
-        if recipient then
+        if recipient ~= "" then
             ADDON:SetContact(index, recipient, icon, note)
         end
     end)
@@ -158,10 +158,6 @@ local function CreateForm()
 
     return popup
 end
-
-ADDON:RegisterLoadUICallback(function()
-
-end)
 
 function ADDON:ShowEditContactPopup(index)
     if not popup then

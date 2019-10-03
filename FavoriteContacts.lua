@@ -123,7 +123,6 @@ function ADDON:SetPosition(position)
         ADDON.settings.position = position
         if isUILoaded then
             ADDON:UpdateContactContainer()
-            ADDON:UpdateContactButtons()
         end
     end
 end
@@ -133,7 +132,6 @@ function ADDON:SetScale(scale)
         ADDON.settings.scale = scale
         if isUILoaded then
             ADDON:UpdateContactContainer()
-            ADDON:UpdateContactButtons()
         end
     end
 end
@@ -143,19 +141,11 @@ frame:RegisterEvent("PLAYER_LOGIN")
 frame:SetScript("OnEvent", function(self, event, arg1)
 
     FireCallbacks(loginCallbacks)
+
     MailFrame:HookScript("OnShow", function()
         if not isUILoaded then
             FireCallbacks(loadUICallbacks)
             isUILoaded = true
         end
-    end)
-
-    MailFrame:HookScript("OnShow", function()
-        local frameLevel = max(InboxFrame:GetFrameLevel(), SendMailFrame:GetFrameLevel())
-        ADDON.contactContainer.frame:SetFrameLevel(frameLevel)
-        ADDON.contactContainer.frame:Show()
-    end)
-    MailFrame:HookScript("OnHide", function()
-        ADDON.contactContainer.frame:Hide()
     end)
 end)
