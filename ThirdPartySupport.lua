@@ -22,6 +22,4 @@ local function SupportBulkMailInbox()
     end)
 end
 
-ADDON:RegisterLoginCallback(function()
-    SupportBulkMailInbox()
-end)
+ADDON:RegisterLoginCallback(SupportBulkMailInbox)

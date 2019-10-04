@@ -1,155 +1,145 @@
 local ADDON_NAME, ADDON = ...
 
+local AceGUI = LibStub("AceGUI-3.0")
+
 local CONTACT_DEFAULT_ICON = "INV_Misc_GroupLooking"
-local NUM_ICONS_PER_ROW = 8
-local NUM_ICON_ROWS = 8
-local NUM_ICONS_SHOWN = NUM_ICONS_PER_ROW * NUM_ICON_ROWS
-local ICON_ROW_HEIGHT = 44
 
-local iconFiles
-local popup
+local popup, buttonContainer
 
-local function UpdateEditContactPopup()
-    local scrollFrame = popup.BorderBox.ScrollFrame
-    local numIcons = #iconFiles
-    local scrollOffset = FauxScrollFrame_GetOffset(scrollFrame)
+local function CreateWindow()
+    local frame = CreateFrame("Frame", nil, UIParent)
 
-    for i = 1, NUM_ICONS_SHOWN do
-        local button = popup.BorderBox["Button" .. i]
-        local buttonIcon = button.Icon
-        local index = (scrollOffset * NUM_ICONS_PER_ROW) + i
-        local texture = iconFiles[index]
+    frame:EnableMouse(true)
+    frame:SetWidth(419)
+    frame:SetHeight(492)
+    frame:SetPoint("CENTER")
 
-        if (index <= numIcons and texture) then
-            ADDON:SetTexture(buttonIcon, texture)
-            button:Show()
-        else
-            buttonIcon:SetTexture("")
-            buttonIcon:SetAtlas("")
-            button:Hide()
-        end
-        if (popup.icon == texture) then
-            button:SetChecked(true)
-        else
-            button:SetChecked(false)
-        end
+    local tex = frame:CreateTexture(nil, "BACKGROUND")
+    tex:SetPoint("TOPLEFT", 7, -7)
+    tex:SetPoint("BOTTOMRIGHT", -7, 7)
+    tex:SetColorTexture(0, 0, 0, 0.8)
+
+    local subFrame = CreateFrame("Frame", nil, frame, "SelectionFrameTemplate")
+    subFrame:SetPoint("TOPLEFT")
+    subFrame:SetPoint("BOTTOMRIGHT")
+
+    frame.BorderBox = subFrame
+
+    -- ElvUI hack
+    if MailFrame.backdrop then
+        frame:StripTextures()
+        frame:CreateBackdrop('Transparent')
+        frame.backdrop:SetAllPoints()
+        subFrame:StripTextures()
     end
 
-    FauxScrollFrame_Update(scrollFrame, ceil(numIcons / NUM_ICONS_PER_ROW), NUM_ICON_ROWS, ICON_ROW_HEIGHT)
+    return frame
 end
 
-local function EditContactPopupSelectTexture(iconIndex)
-    popup.icon = iconFiles[iconIndex]
-    popup.BorderBox.IconName:SetText(popup.icon)
-    UpdateEditContactPopup()
-end
+local function UpdateForm(container)
+    local iconText = popup.BorderBox.IconName:GetText()
 
-local function CreateIconButtons()
-    local previous, firstLastRow
-
-    for i = 1, NUM_ICONS_SHOWN do
-        local modulo = math.fmod(i, NUM_ICONS_PER_ROW)
-
-        local button = CreateFrame("CheckButton", nil, popup, "FavoriteContactsEditContactButtonTemplate", i)
-        if i == 1 then
-            button:SetPoint("TOPLEFT", popup.BorderBox.IconLabel, "BOTTOMLEFT", 0, -10)
-            firstLastRow = button
-        elseif modulo == 1 then
-            button:SetPoint("TOPLEFT", firstLastRow, "BOTTOMLEFT", 0, -8)
-            firstLastRow = button
+    for _, widget in pairs(container.children) do
+        if iconText == widget:GetUserData("icon") then
+            widget:SetChecked(true)
         else
-            button:SetPoint("LEFT", previous, "RIGHT", 8, 0)
+            widget:SetChecked(false)
         end
-
-        popup.BorderBox["Button" .. i] = button
-        previous = button
     end
 end
 
-local function CreateEditContactPopup()
-    local L = ADDON.L
+local function CreateIconButtons(container)
+    for _, icon in pairs(ADDON.iconFiles) do
+        local button = AceGUI:Create("FC_CheckedButton")
+        ADDON:SetTexture(button.image, icon)
 
-    popup = CreateFrame("Frame", nil, UIParent, "FavoriteContactsEditContactPopupTemplate")
-    CreateIconButtons()
-    popup.BorderBox.NameLabel:SetText(L["Contact Name:"])
-    popup.BorderBox.NoteLabel:SetText(L["Contact Note:"])
-
-    popup:SetScript("OnShow", function(sender)
-        iconFiles = {
-            -- class
-            "ClassIcon_DeathKnight", "ClassIcon_DemonHunter", "ClassIcon_Druid", "ClassIcon_Hunter", "ClassIcon_Mage", "ClassIcon_Monk",
-            "ClassIcon_Paladin", "ClassIcon_Priest", "ClassIcon_Rogue", "ClassIcon_Shaman", "ClassIcon_Warlock", "ClassIcon_Warrior",
-
-            -- people - uses texture atlas instead of plain textures
-            "raceicon-human-female", "raceicon-human-male",
-            "raceicon-gnome-female", "raceicon-gnome-male",
-            "raceicon-dwarf-female", "raceicon-dwarf-male",
-            "raceicon-nightelf-female", "raceicon-nightelf-male",
-            "raceicon-draenei-female", "raceicon-draenei-male",
-            "raceicon-worgen-female", "raceicon-worgen-male",
-            "raceicon-voidelf-female", "raceicon-voidelf-male",
-            "raceicon-lightforged-female", "raceicon-lightforged-male",
-            "raceicon-darkirondwarf-female", "raceicon-darkirondwarf-male",
-            "raceicon-pandaren-female", "raceicon-pandaren-male",
-            "raceicon-orc-female", "raceicon-orc-male",
-            "raceicon-tauren-female", "raceicon-tauren-male",
-            "raceicon-troll-female", "raceicon-troll-male",
-            "raceicon-undead-female", "raceicon-undead-male",
-            "raceicon-bloodelf-female", "raceicon-bloodelf-male",
-            "raceicon-goblin-female", "raceicon-goblin-male",
-            "raceicon-highmountain-female", "raceicon-highmountain-male",
-            "raceicon-nightborne-female", "raceicon-nightborne-male",
-            "raceicon-magharorc-female", "raceicon-magharorc-male",
-
-            --profession
-            "inv_misc_gem_01",
-            "Trade_Engraving",
-            "Trade_Engineering",
-            "Trade_Alchemy",
-            "inv_inscription_tradeskill01",
-            "Trade_Tailoring",
-            "inv_misc_armorkit_17",
-            "Trade_BlackSmithing",
-            "Trade_Herbalism",
-            "inv_misc_pelt_wolf_01",
-            "Trade_Mining",
-            "trade_archaeology",
-            "inv_misc_food_15",
-            "Trade_Fishing",
-            "spell_holy_sealofsacrifice",
-
-            -- faction
-            "INV_BannerPVP_01",
-            "INV_BannerPVP_02",
-
-            "ACHIEVEMENT_GUILDPERK_MOBILEBANKING",
-            "Garrison_Building_TradingPost",
-
-            CONTACT_DEFAULT_ICON,
-        }
-    end)
-    popup:SetScript("OnHide", function()
-        iconFiles = nil
-        collectgarbage()
-    end)
-
-    local scrollFrame = popup.BorderBox.ScrollFrame
-
-    for index = 1, NUM_ICONS_SHOWN do
-        local icon = popup.BorderBox["Button" .. index]
-        icon:SetScript("OnClick", function(sender)
-            local scrollOffset = FauxScrollFrame_GetOffset(scrollFrame)
-            EditContactPopupSelectTexture(sender:GetID() + (scrollOffset * NUM_ICONS_PER_ROW))
+        button:SetUserData("icon", icon)
+        button:SetCallback("OnClick", function(widget)
+            popup.BorderBox.IconName:SetText(widget:GetUserData("icon"))
+            UpdateForm(container)
         end)
+
+        container:AddChild(button)
     end
+end
 
-    scrollFrame:SetScript("OnVerticalScroll", function(sender, offset)
-        FauxScrollFrame_OnVerticalScroll(sender, offset, ICON_ROW_HEIGHT, function() UpdateEditContactPopup() end)
-    end)
+local function CreateEditBox(text)
+    local edit = AceGUI:Create("EditBox")
+    edit:SetLabel(text)
+    edit:SetWidth(371)
+    edit:SetHeight(22)
+    edit:SetParent({ content = popup.BorderBox })
+    edit:DisableButton(true)
 
-    popup.BorderBox.OkayButton:SetScript("OnClick", function()
+    edit.label:ClearAllPoints()
+    edit.label:SetPoint("TOPLEFT", 0, -2)
+
+    edit.editbox:ClearAllPoints()
+    edit.editbox:SetPoint("LEFT", edit.label, "LEFT", 120, 0)
+    edit.editbox:SetPoint("RIGHT")
+
+    edit.frame:Show()
+
+    return edit
+end
+
+local function CreateCloseButton(text, func)
+    local button = AceGUI:Create("Button")
+    button:SetAutoWidth(true)
+    button:SetText(text)
+    button:SetParent({ content = popup.BorderBox })
+    button:SetCallback("OnClick", function()
+        PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK)
         popup:Hide()
 
+        if func then
+            func()
+        end
+    end)
+    button.frame:Show()
+
+    return button
+end
+
+local function CreateForm()
+    local L = ADDON.L
+
+    popup = CreateWindow()
+
+    popup.BorderBox.ContactNameEditBox = CreateEditBox(L["Contact Name:"])
+    popup.BorderBox.ContactNameEditBox:SetPoint("TOPLEFT", 24, -14)
+    popup.BorderBox.NoteEditBox = CreateEditBox(L["Contact Note:"])
+    popup.BorderBox.NoteEditBox:SetPoint("TOPLEFT", 24, -36)
+    popup.BorderBox.IconName = CreateEditBox(MACRO_POPUP_CHOOSE_ICON)
+    popup.BorderBox.IconName:SetPoint("TOPLEFT", 24, -70)
+
+    local scrollcontainer = AceGUI:Create("SimpleGroup")
+    scrollcontainer:SetWidth(370)
+    scrollcontainer:SetHeight(360)
+    scrollcontainer:SetParent({ content = popup.BorderBox })
+    scrollcontainer:SetPoint("TOP", 0, -95)
+    scrollcontainer:SetLayout("Fill")
+
+    buttonContainer = AceGUI:Create("ScrollFrame")
+    buttonContainer:SetLayout("Flow")
+    scrollcontainer:AddChild(buttonContainer)
+
+    CreateIconButtons(buttonContainer)
+
+    popup:HookScript("OnShow", function()
+        ADDON:SetEnableContacts(false)
+    end)
+    popup:HookScript("OnHide", function()
+        ADDON:SetEnableContacts(true)
+    end)
+
+    popup.BorderBox.OkayButton:Hide()
+    popup.BorderBox.CancelButton:Hide()
+
+    local cancelButton = CreateCloseButton(CANCEL)
+    cancelButton:SetPoint("BOTTOMRIGHT", -11, 11)
+
+    local okayButton = CreateCloseButton(OKAY, function()
         local index = popup.index
         local recipient = popup.BorderBox.ContactNameEditBox:GetText()
         local note = popup.BorderBox.NoteEditBox:GetText()
@@ -159,27 +149,24 @@ local function CreateEditContactPopup()
             icon = CONTACT_DEFAULT_ICON
         end
 
-        ADDON:SetContact(index, recipient, icon, note)
-
-        ADDON:SetSelectedContact(-1)
-        ADDON:SetEnableContacts(true)
+        if recipient ~= "" then
+            ADDON:SetContact(index, recipient, icon, note)
+        end
     end)
+    okayButton:SetWidth(math.max(cancelButton.frame:GetWidth(), 78))
+    okayButton:SetPoint("RIGHT", cancelButton.frame, "LEFT", -2, 0)
 
-    popup.BorderBox.CancelButton:SetScript("OnClick", function()
-        popup:Hide()
-
-        ADDON:SetSelectedContact(-1)
-        ADDON:SetEnableContacts(true)
-    end)
+    return popup
 end
 
-ADDON:RegisterLoadUICallback(CreateEditContactPopup)
-
 function ADDON:ShowEditContactPopup(index)
+    if not popup then
+        popup = CreateForm()
+    end
+
     popup.index = index
 
     local contact = self.settings.contacts[index] or {}
-    popup.icon = contact.icon or CONTACT_DEFAULT_ICON
 
     local nameEdit = popup.BorderBox.ContactNameEditBox
     nameEdit:SetText(contact.recipient or "")
@@ -188,13 +175,11 @@ function ADDON:ShowEditContactPopup(index)
     noteEdit:SetText(contact.note or "")
 
     local iconEdit = popup.BorderBox.IconName
-    iconEdit:SetText(popup.icon or "")
+    iconEdit:SetText(contact.icon or CONTACT_DEFAULT_ICON)
 
+    UpdateForm(buttonContainer)
     popup:Show()
     nameEdit:SetFocus()
 
-    self:SetSelectedContact(popup.index)
     self:SetEnableContacts(false)
-
-    UpdateEditContactPopup()
 end
