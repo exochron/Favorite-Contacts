@@ -10,6 +10,10 @@ function ADDON:SetTexture(texture, iconName)
         texture:SetTexCoord(0, 1, 0, 1)
 
         texture:SetAtlas(iconName)
+    elseif iconName:sub(1, 10) == "Interface\\" then
+        local path, a, b, c, d = strsplit(",", iconName)
+        texture:SetTexture(path)
+        texture:SetTexCoord(a, b, c, d)
     else
         texture:SetTexture("INTERFACE\\ICONS\\" .. iconName)
         texture:SetTexCoord(0, 1, 0, 1)
