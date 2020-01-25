@@ -12,28 +12,25 @@ L["ClickToSend mode disabled"] = "Отключен режим ClickToSend"
 L["ClickToSend mode enabled"] = "Включен режим ClickToSend"
 L["Contact added (Position: %d, Recipient: %s, Icon: %s)"] = "Контакт добавлен (Позиция: %d, Получатель: %s, Значок: %s)"
 L["Contact Name:"] = "Имя контакта:"
---[[Translation missing --]]
---[[ L["Contact Note:"] = "Contact Note:"--]]
+L["Contact Note:"] = "Заметка контакта:"
 L["Contact removed (Position: %d)"] = "Контакт удален (Позиция: %d)"
 L["Create"] = "Создать"
 L["No Contact on position %d"] = "Нет контакта в позиции %d"
-L["Note changed to %s (Position: %d)"] = "Примечание изменено на %s (Позиция: %d)"
-L["Note removed (Position: %d)"] = "Примечание удалено (Позиция: %d)"
+L["Note changed to %s (Position: %d)"] = "Заметка изменена на %s (Позиция: %d)"
+L["Note removed (Position: %d)"] = "Заметка удалена (Позиция: %d)"
 L["Position set to %s"] = "Позиция установлена в %s"
 L["Size changed to %dx%d"] = "Размер изменен на %dx%d"
 
 -- Settings
-L["SETTING_CLICKTOSEND_LABEL"] = "Отправить письмо, нажав на контакт"
+L["SETTING_CLICKTOSEND_LABEL"] = "Отправить письмо, щелчком на контакт"
 L["SETTING_COLUMN_COUNT_LABEL"] = "Количество столбцов"
---[[Translation missing --]]
---[[ L["SETTING_HEAD_DISPLAY"] = "Display Customization"--]]
---[[Translation missing --]]
---[[ L["SETTING_HEAD_INTERACTION"] = "Interaction"--]]
-L["SETTING_POSITION_BOTTOM"] = "Низ"
+L["SETTING_HEAD_DISPLAY"] = "Настройка отображения"
+L["SETTING_HEAD_INTERACTION"] = "Действия"
+L["SETTING_POSITION_BOTTOM"] = "Снизу"
 L["SETTING_POSITION_LABEL"] = "Положение контактов вокруг почтового фрейма"
-L["SETTING_POSITION_LEFT"] = "Лево"
-L["SETTING_POSITION_RIGHT"] = "Право"
-L["SETTING_POSITION_TOP"] = "Верх"
+L["SETTING_POSITION_LEFT"] = "Слева"
+L["SETTING_POSITION_RIGHT"] = "Справа"
+L["SETTING_POSITION_TOP"] = "Сверху"
 L["SETTING_ROW_COUNT_LABEL"] = "Количество строк"
 L["SETTING_SCALE_AUTO"] = "Автоматически"
 L["SETTING_SCALE_LABEL"] = "Размер"

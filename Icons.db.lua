@@ -74,6 +74,7 @@ else
         "raceicon-lightforged-female", "raceicon-lightforged-male",
         "raceicon-darkirondwarf-female", "raceicon-darkirondwarf-male",
         "raceicon-kultiran-female", "raceicon-kultiran-male",
+        "raceicon-mechagnome-female", "raceicon-mechagnome-male",
         "raceicon-pandaren-female", "raceicon-pandaren-male",
         "raceicon-orc-female", "raceicon-orc-male",
         "raceicon-tauren-female", "raceicon-tauren-male",
@@ -85,6 +86,7 @@ else
         "raceicon-nightborne-female", "raceicon-nightborne-male",
         "raceicon-magharorc-female", "raceicon-magharorc-male",
         "raceicon-zandalari-female", "raceicon-zandalari-male",
+        "raceicon-vulpera-female", "raceicon-vulpera-male",
 
         --profession
         "inv_misc_gem_01",
