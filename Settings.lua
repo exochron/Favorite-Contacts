@@ -10,6 +10,7 @@ local defaultSettings = {
     scale = "AUTO",
     clickToSend = false,
     reorderContacts = true,
+    switchTabOnEmptyInbox = true,
 }
 
 function ADDON:ResetUISettings()
@@ -18,6 +19,7 @@ function ADDON:ResetUISettings()
     ADDON.settings.position = "RIGHT"
     ADDON.settings.scale = "AUTO"
     ADDON.settings.clickToSend = false
+    ADDON.settings.switchTabOnEmptyInbox = true
 end
 
 local function CombineSettings(settings, defaultSettings)
