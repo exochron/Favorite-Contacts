@@ -139,6 +139,9 @@ local function BuildFrame()
     yOffset = yOffset - 20
     frame.clickCheck = BuildCheckBox(frame, L.SETTING_CLICKTOSEND_LABEL, yOffset)
 
+    yOffset = yOffset - 20
+    frame.autoSwitchCheck = BuildCheckBox(frame, L.SETTING_SWITCHTAB_LABEL, yOffset)
+
     return frame
 end
 
@@ -158,6 +161,7 @@ local function RefreshHandler(frame)
     end
 
     frame.clickCheck:SetValue(ADDON.settings.clickToSend)
+    frame.autoSwitchCheck:SetValue(ADDON.settings.switchTabOnEmptyInbox)
 end
 
 local function OKHandler(frame)
@@ -171,6 +175,7 @@ local function OKHandler(frame)
     end
 
     ADDON.settings.clickToSend = frame.clickCheck:GetValue()
+    ADDON.settings.switchTabOnEmptyInbox = frame.autoSwitchCheck:GetValue()
 end
 
 ADDON:RegisterLoginCallback(function()

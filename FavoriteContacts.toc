@@ -27,6 +27,7 @@ Settings.lua
 Icons.db.lua
 UI\AceGUIWidget-FC_CheckedButton.lua
 UI\Functions.lua
+UI\AutoSwitchTab.lua
 UI\ContactContainer.lua
 UI\ContactButton.lua
 UI\EditPopup.lua
