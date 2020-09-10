@@ -2,12 +2,12 @@
 ## Interface: 80300
 #@end-retail@
 #@non-retail@
-# ## Interface: 11302
+# ## Interface: 11305
 #@end-non-retail@
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox for easy access to your favorite contacts
 ## Author: eXochron
-## Version: 2.2
+## Version: @project-version@
 ## SavedVariables: FavoriteContactsSettings
 ## X-Curse-Project-ID: 88756
 
