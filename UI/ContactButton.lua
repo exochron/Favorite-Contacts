@@ -17,20 +17,23 @@ local function SendMail()
 end
 
 local function OnContactButtonClicked(button, event, buttonType)
-    if (currentDragContact ~= 0) then
+    if currentDragContact ~= 0 then
         ADDON:StopDrag(button.index)
         return
     end
 
-    if (buttonType == "LeftButton") then
-        if (button.index) then
+    if buttonType == "LeftButton" then
+        if button.index then
             local contact = ADDON.settings.contacts[button.index]
-            if (contact) then
+            if contact then
                 MailFrameTab_OnClick(nil, 2)
                 SendMailNameEditBox:SetText(contact.recipient)
                 SendMailSubjectEditBox:SetFocus()
 
-                if (ADDON.settings.clickToSend) then
+                if CursorHasItem() then
+                    SendMailAttachmentButton_OnDropAny()
+                end
+                if ADDON.settings.clickToSend then
                     SendMail()
                 end
             else
@@ -44,7 +47,7 @@ local function OnContactButtonClicked(button, event, buttonType)
         return
     end
 
-    if (buttonType == "RightButton") then
+    if buttonType == "RightButton" then
         contextMenuIndex = button.index
         MSA_ToggleDropDownMenu(1, nil, contextMenu, button.frame, 0, 0)
         return
@@ -119,8 +122,12 @@ local function CreateContactButton(index)
     end)
     button:SetCallback("OnReceiveDrag", function(widget)
         if not widget.disabled then
-            ADDON:SwapContacts(currentDragContact, widget.index)
-            currentDragContact = 0
+            if currentDragContact ~= 0 then
+                ADDON:SwapContacts(currentDragContact, widget.index)
+                currentDragContact = 0
+            elseif CursorHasItem() then
+                OnContactButtonClicked(button, "OnClick", "LeftButton")
+            end
         end
     end)
 
