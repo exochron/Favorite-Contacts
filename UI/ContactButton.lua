@@ -49,7 +49,7 @@ local function OnContactButtonClicked(button, event, buttonType)
 
     if buttonType == "RightButton" then
         contextMenuIndex = button.index
-        MSA_ToggleDropDownMenu(1, nil, contextMenu, button.frame, 0, 0)
+        ToggleDropDownMenu(1, nil, contextMenu, button.frame, 0, 0)
         return
     end
 end
@@ -167,40 +167,48 @@ function ADDON:UpdateContactButtons()
 end
 
 local function InitButtonMenu(sender, level)
-    local info = MSA_DropDownMenu_CreateInfo()
-    info.notCheckable = true
-
+    local info
     local contact = ADDON.settings.contacts[contextMenuIndex]
-    if (contact) then
-        info.text = EDIT
-        info.func = function()
-            ADDON:ShowEditContactPopup(contextMenuIndex)
-        end
-        MSA_DropDownMenu_AddButton(info, level)
+    if contact then
+        info = {
+            notCheckable = true,
+            text = EDIT,
+            func = function()
+                ADDON:ShowEditContactPopup(contextMenuIndex)
+            end,
+        }
+        UIDropDownMenu_AddButton(info, level)
 
-        info.text = DELETE
-        info.func = function()
-            ADDON:DeleteContact(contextMenuIndex)
-        end
-        MSA_DropDownMenu_AddButton(info, level)
+        info = {
+            notCheckable = true,
+            text = DELETE,
+            func = function()
+                ADDON:DeleteContact(contextMenuIndex)
+            end,
+        }
+        UIDropDownMenu_AddButton(info, level)
     else
-        info.text = ADDON.L["Create"]
-        info.func = function()
-            ADDON:ShowEditContactPopup(contextMenuIndex)
-        end
-        MSA_DropDownMenu_AddButton(info, level)
+        info = {
+            notCheckable = true,
+            text = ADDON.L["Create"],
+            func = function()
+                ADDON:ShowEditContactPopup(contextMenuIndex)
+            end,
+        }
+        UIDropDownMenu_AddButton(info, level)
     end
 
-    info.text = CANCEL
-    info.func = nil
-    MSA_DropDownMenu_AddButton(info, level)
+    info = {
+        notCheckable = true,
+        text = CANCEL,
+        func = mil,
+    }
+    UIDropDownMenu_AddButton(info, level)
 end
 
 ADDON:RegisterLoadUICallback(function()
     ADDON:UpdateContactButtons()
 
-    contextMenu = MSA_DropDownMenu_Create(ADDON_NAME .. "ContactButtonContextMenu", ADDON.contactContainer.content)
-    MSA_DropDownMenu_Initialize(contextMenu, function(sender, level)
-        InitButtonMenu(sender, level)
-    end, "MENU")
+    contextMenu = CreateFrame("Frame", ADDON_NAME .. "ContactButtonContextMenu", ADDON.contactContainer.content, "UIDropDownMenuTemplate")
+    UIDropDownMenu_Initialize(contextMenu, InitButtonMenu, "MENU")
 end)
