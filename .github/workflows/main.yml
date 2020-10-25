@@ -40,12 +40,10 @@ jobs:
       # once cloned, we just run the GitHub Action for the packager project
       - name: Package and release
         uses: BigWigsMods/packager@master
-        with:
-          args: -m pkgmeta.yaml
 
       # another example where we supply additional arguments, this example is specifically to release
       # for the Classic version of the game
       - name: Package and release for Classic
         uses: BigWigsMods/packager@master
         with:
-          args: -m pkgmeta.yaml -g 1.13.5
+          args: -g 1.13.5

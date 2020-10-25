@@ -1,5 +1,5 @@
 #@retail@
-## Interface: 80300
+## Interface: 90001
 #@end-retail@
 #@non-retail@
 # ## Interface: 11305
@@ -13,7 +13,7 @@
 
 Libs\LibStub\LibStub.lua
 Libs\AceGUI-3.0\AceGUI-3.0.xml
-Libs\UIDropDownMenu.lua
+Libs\TaintLess\TaintLess.xml
 
 Locals\enUS.lua
 Locals\deDE.lua
