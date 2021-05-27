@@ -33,3 +33,21 @@ L["SETTING_SCALE_AUTO"] = "Automatic"
 L["SETTING_SCALE_LABEL"] = "Size factor"
 L["SETTING_SCALE_MANUAL"] = "Manual"
 L["SETTING_SWITCHTAB_LABEL"] = "Directly open \"Write Mail\" on empty inbox"
+
+local locale = GetLocale()
+if locale == "deDE" then
+    --@localization(locale="deDE", format="lua_additive_table", handle-unlocalized=comment)@
+    --@localization(locale="deDE", namespace="Settings", format="lua_additive_table", handle-unlocalized=comment)@
+elseif locale == "frFR" then
+    --@localization(locale="frFR", format="lua_additive_table", handle-unlocalized=comment)@
+    --@localization(locale="frFR", namespace="Settings", format="lua_additive_table", handle-unlocalized=comment)@
+elseif locale == "koKR" then
+    --@localization(locale="koKR", format="lua_additive_table", handle-unlocalized=comment)@
+    --@localization(locale="koKR", namespace="Settings", format="lua_additive_table", handle-unlocalized=comment)@
+elseif locale == "ptBR" then
+    --@localization(locale="ptBR", format="lua_additive_table", handle-unlocalized=comment)@
+    --@localization(locale="ptBR", namespace="Settings", format="lua_additive_table", handle-unlocalized=comment)@
+elseif locale == "ruRU" then
+    --@localization(locale="ruRU", format="lua_additive_table", handle-unlocalized=comment)@
+    --@localization(locale="ruRU", namespace="Settings", format="lua_additive_table", handle-unlocalized=comment)@
+end
