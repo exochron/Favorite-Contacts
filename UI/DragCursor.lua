@@ -12,8 +12,9 @@ end
 
 
 local function CreateDragIcon()
+    local scale = ADDON.contactContainer.frame:GetEffectiveScale()
     dragIcon = CreateFrame("Frame")
-    dragIcon:SetSize(20,20)
+    dragIcon:SetSize(ADDON.CONTACT_BUTTON_SIZE * scale, ADDON.CONTACT_BUTTON_SIZE * scale)
     dragIcon:SetDontSavePosition()
     dragIcon:SetMovable(false)
     dragIcon:EnableMouse(false)

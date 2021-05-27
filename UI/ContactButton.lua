@@ -1,7 +1,6 @@
 local ADDON_NAME, ADDON = ...
 
 local CONTACT_DEFAULT_ICON = "INV_Misc_GroupLooking"
-local CONTACT_BUTTON_SIZE = 36
 
 local contextMenu
 local contextMenuIndex
@@ -64,9 +63,9 @@ local function CreateContactButton(index)
     button = AceGUI:Create("Icon")
     ADDON.contactContainer:AddChild(button)
 
-    button:SetImageSize(CONTACT_BUTTON_SIZE, CONTACT_BUTTON_SIZE)
-    button:SetHeight(CONTACT_BUTTON_SIZE)
-    button:SetWidth(CONTACT_BUTTON_SIZE + 3)
+    button:SetImageSize(ADDON.CONTACT_BUTTON_SIZE, ADDON.CONTACT_BUTTON_SIZE)
+    button:SetHeight(ADDON.CONTACT_BUTTON_SIZE)
+    button:SetWidth(ADDON.CONTACT_BUTTON_SIZE + ADDON.CONTACT_BUTTON_MARGIN)
 
     button.image:SetPoint("TOP", 0, 0)
 
