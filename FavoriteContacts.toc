@@ -1,12 +1,6 @@
-#@version-classic@
-# ## Interface: 11307
-#@end-version-classic@
-#@version-bcc@
-# ## Interface: 20501
-#@end-version-bcc@
-#@version-retail@
 ## Interface: 90005
-#@end-version-retail@
+## Interface-Classic: 11307
+## Interface-BCC: 20501
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox for easy access to your favorite contacts
 ## Author: eXochron
