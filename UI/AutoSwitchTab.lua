@@ -10,7 +10,7 @@ MailFrame:HookScript("OnShow", function()
             else
                 checkWithNextUpdate = false
                 if GetInboxNumItems() == 0 then
-                    MailFrameTab_OnClick(nil, 2)
+                    MailFrameTab2:Click()
                 end
             end
         end)
@@ -20,7 +20,7 @@ MailFrame:HookScript("OnEvent", function(self, event)
     if ADDON.settings.switchTabOnEmptyInbox then
         if event == "MAIL_INBOX_UPDATE" then
             if checkWithNextUpdate and GetInboxNumItems() == 0 then
-                MailFrameTab_OnClick(nil, 2)
+                MailFrameTab2:Click()
             end
             checkWithNextUpdate = false
         end

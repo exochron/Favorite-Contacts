@@ -40,7 +40,7 @@ function ADDON:UpdateContactContainer()
         MailFrame:SetAttribute("UIPanelLayout-extraHeight", 0)
 
         self.contactContainer:ClearAllPoints()
-        self.contactContainer:SetPoint("TOPRIGHT", MailFrame, "TOPLEFT", -CONTACT_BUTTON_MARGIN, 3)
+        self.contactContainer:SetPoint("TOPRIGHT", MailFrame, "TOPLEFT", -ADDON.CONTACT_BUTTON_MARGIN, 3)
 
         OpenMailFrame:ClearAllPoints()
         OpenMailFrame:SetPoint("TOPLEFT", InboxFrame, "TOPRIGHT", 0, 0)

@@ -41,17 +41,5 @@ jobs:
       # once cloned, we just run the GitHub Action for the packager project
       - name: Package and release
         uses: BigWigsMods/packager@master
-
-      # another example where we supply additional arguments, this example is specifically to release
-      # for the Classic version of the game
-      - name: Package and release for Classic
-        uses: BigWigsMods/packager@master
         with:
-          args: -g classic
-
-      # another example where we supply additional arguments, this example is specifically to release
-      # for the Burning Crusade version of the game
-      - name: Package and release for BCC
-        uses: BigWigsMods/packager@master
-        with:
-          args: -g bcc
+          args: -g 1.13.7,2.5.1,9.0.5
