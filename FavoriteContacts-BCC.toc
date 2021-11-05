@@ -1,4 +1,4 @@
-## Interface: 20501
+## Interface: 20502
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox for easy access to your favorite contacts
 ## Author: eXochron
