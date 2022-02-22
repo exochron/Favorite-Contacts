@@ -1,4 +1,4 @@
-local ADDON_NAME, ADDON = ...
+local _, ADDON = ...
 
 local AceGUI = LibStub("AceGUI-3.0")
 
@@ -7,12 +7,14 @@ local CONTACT_DEFAULT_ICON = "INV_Misc_GroupLooking"
 local popup, buttonContainer
 
 local function CreateWindow()
-    local frame = CreateFrame("Frame", nil, UIParent)
+    local frame = CreateFrame("Frame", "FavoriteContactsEditFrame", UIParent)
+    tinsert(UISpecialFrames, frame:GetName()) -- also close frame on escape
 
     frame:EnableMouse(true)
     frame:SetWidth(419)
     frame:SetHeight(492)
     frame:SetPoint("CENTER")
+    frame:SetFrameStrata("DIALOG")
 
     local tex = frame:CreateTexture(nil, "BACKGROUND")
     tex:SetPoint("TOPLEFT", 7, -7)
