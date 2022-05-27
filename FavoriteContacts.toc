@@ -1,4 +1,4 @@
-## Interface: 90200
+## Interface: 90205
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox to easily access your favorite contacts
 ## Author: eXochron

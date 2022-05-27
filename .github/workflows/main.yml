@@ -41,5 +41,3 @@ jobs:
       # once cloned, we just run the GitHub Action for the packager project
       - name: Package and release
         uses: BigWigsMods/packager@master
-        with:
-          args: -g 1.14.2,2.5.3,9.2.0
