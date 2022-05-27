@@ -38,6 +38,9 @@ local locale = GetLocale()
 if locale == "deDE" then
     --@localization(locale="deDE", format="lua_additive_table", handle-unlocalized=comment)@
     --@localization(locale="deDE", namespace="Settings", format="lua_additive_table", handle-unlocalized=comment)@
+elseif locale == "esES" then
+    --@localization(locale="esES", format="lua_additive_table", handle-unlocalized=comment)@
+    --@localization(locale="esES", namespace="Settings", format="lua_additive_table", handle-unlocalized=comment)@
 elseif locale == "frFR" then
     --@localization(locale="frFR", format="lua_additive_table", handle-unlocalized=comment)@
     --@localization(locale="frFR", namespace="Settings", format="lua_additive_table", handle-unlocalized=comment)@
