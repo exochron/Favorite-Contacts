@@ -1,4 +1,4 @@
-## Interface: 20504
+## Interface: 30400
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox to easily access your favorite contacts
 ## Author: eXochron
@@ -14,7 +14,7 @@ Libs\TaintLess\TaintLess.xml
 Locals.lua
 FavoriteContacts.lua
 Settings.lua
-Icons.bcc.lua
+Icons.wrath.lua
 UI\AceGUIWidget-FC_CheckedButton.lua
 UI\Functions.lua
 UI\AutoSwitchTab.lua

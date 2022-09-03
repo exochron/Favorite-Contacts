@@ -1,11 +1,8 @@
 local _, ADDON = ...
 
--- see https://github.com/tomrus88/BlizzardInterfaceCode/blob/tbc/Interface/GlueXML/CharacterCreate.lua
--- for new race and class icons
-
 ADDON.iconFiles = {
     -- class
-    "ClassIcon_Druid", "ClassIcon_Hunter", "ClassIcon_Mage", "ClassIcon_Paladin", "ClassIcon_Priest",
+    "spell_deathknight_classicon", "ClassIcon_Druid", "ClassIcon_Hunter", "ClassIcon_Mage", "ClassIcon_Paladin", "ClassIcon_Priest",
     "ClassIcon_Rogue", "ClassIcon_Shaman", "ClassIcon_Warlock", "ClassIcon_Warrior",
 
     -- people - uses plain textures with coordinates
@@ -36,6 +33,7 @@ ADDON.iconFiles = {
     "Trade_Engraving",
     "Trade_Engineering",
     "Trade_Alchemy",
+    "inv_inscription_tradeskill01",
     "Trade_Tailoring",
     "inv_misc_armorkit_17",
     "Trade_BlackSmithing",
