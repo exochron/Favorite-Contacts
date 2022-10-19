@@ -32,6 +32,7 @@ ADDON.iconFiles = {
     "raceicon-magharorc-female", "raceicon-magharorc-male",
     "raceicon-zandalari-female", "raceicon-zandalari-male",
     "raceicon-vulpera-female", "raceicon-vulpera-male",
+    --TODO: Dracthyr
 
     --profession
     "inv_misc_gem_01",

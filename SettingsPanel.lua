@@ -178,10 +178,16 @@ local function OKHandler(frame)
     ADDON.settings.switchTabOnEmptyInbox = frame.autoSwitchCheck:GetValue()
 end
 
+local category
 ADDON:RegisterLoginCallback(function()
     local group = BuildFrame()
     group:SetCallback("refresh", RefreshHandler)
     group:SetCallback("okay", OKHandler)
     group:SetCallback("default", ADDON.ResetUISettings)
-    InterfaceOptions_AddCategory(group.frame)
+    category = Settings.RegisterCanvasLayoutCategory(group.frame, GetAddOnMetadata(ADDON_NAME, "Title"))
+    Settings.RegisterAddOnCategory(category)
 end)
+
+function ADDON:OpenSettings()
+    Settings.OpenToCategory(category.ID)
+end

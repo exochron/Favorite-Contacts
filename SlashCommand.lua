@@ -101,10 +101,7 @@ function SlashCmdList.FAVORITECONTACTS(msg)
         end
     end
 
-    -- open double to prevent stupid interface bug
-    local title = GetAddOnMetadata(ADDON_NAME, "Title")
-    InterfaceOptionsFrame_OpenToCategory(title)
-    InterfaceOptionsFrame_OpenToCategory(title)
+    ADDON:OpenSettings()
 
     --print("Syntax:")
     --print("/fc size <column count> <rows count>")
