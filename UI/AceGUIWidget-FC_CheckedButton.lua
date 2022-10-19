@@ -60,6 +60,7 @@ local function Constructor()
 	frame:SetNormalTexture(image)
 	frame:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
 	frame:SetCheckedTexture("Interface\\Buttons\\CheckButtonHilight")
+	frame:GetCheckedTexture():SetBlendMode("ADD")
 
 	local widget = {
 		image = image,

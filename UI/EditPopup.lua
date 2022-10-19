@@ -28,7 +28,7 @@ local function CreateWindow()
     frame.BorderBox = subFrame
 
     -- ElvUI hack
-    if MailFrame.backdrop then
+    if InboxFrame.backdrop then
         frame:StripTextures()
         frame:CreateBackdrop('Transparent')
         frame.backdrop:SetAllPoints()

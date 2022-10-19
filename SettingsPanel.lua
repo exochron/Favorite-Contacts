@@ -184,10 +184,24 @@ ADDON:RegisterLoginCallback(function()
     group:SetCallback("refresh", RefreshHandler)
     group:SetCallback("okay", OKHandler)
     group:SetCallback("default", ADDON.ResetUISettings)
-    category = Settings.RegisterCanvasLayoutCategory(group.frame, GetAddOnMetadata(ADDON_NAME, "Title"))
-    Settings.RegisterAddOnCategory(category)
+
+    if Settings then
+        -- retail (dragonflight)
+        category = Settings.RegisterCanvasLayoutCategory(group.frame, GetAddOnMetadata(ADDON_NAME, "Title"))
+        Settings.RegisterAddOnCategory(category)
+    else
+        -- classics
+        InterfaceOptions_AddCategory(group.frame)
+    end
 end)
 
 function ADDON:OpenSettings()
-    Settings.OpenToCategory(category.ID)
+    if category and Settings then
+        Settings.OpenToCategory(category.ID)
+    else
+        -- open double to prevent stupid interface bug
+        local title = GetAddOnMetadata(ADDON_NAME, "Title")
+        InterfaceOptionsFrame_OpenToCategory(title)
+        InterfaceOptionsFrame_OpenToCategory(title)
+    end
 end

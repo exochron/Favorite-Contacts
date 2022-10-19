@@ -1,4 +1,4 @@
-local ADDON_NAME, ADDON = ...
+local _, ADDON = ...
 
 ADDON.CONTACT_BUTTON_SIZE = 36
 ADDON.CONTACT_BUTTON_MARGIN = 3
@@ -11,6 +11,7 @@ local function CreateContainer()
     contactContainer.frame:SetToplevel(true)
     contactContainer.frame:SetFrameStrata("HIGH")
     contactContainer:SetAutoAdjustHeight(false)
+    contactContainer.content:SetAllPoints() -- ElvUI moves content
 
     ADDON.contactContainer = contactContainer
 end
