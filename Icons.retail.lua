@@ -5,6 +5,8 @@ local _, ADDON = ...
 
 ADDON.iconFiles = {
     "INV_Misc_GroupLooking",
+    "ACHIEVEMENT_GUILDPERK_MOBILEBANKING",
+    "Garrison_Building_TradingPost",
 
     -- class
     "ClassIcon_DeathKnight", "ClassIcon_DemonHunter", "ClassIcon_Druid", "classicon_evoker", "ClassIcon_Hunter",
@@ -58,7 +60,4 @@ ADDON.iconFiles = {
     -- faction
     "INV_BannerPVP_01",
     "INV_BannerPVP_02",
-
-    "ACHIEVEMENT_GUILDPERK_MOBILEBANKING",
-    "Garrison_Building_TradingPost",
 }

@@ -1,4 +1,12 @@
-local ADDON_NAME, ADDON = ...
+local _, ADDON = ...
+
+-- Syntax:
+-- /fc size <column count> <rows count>
+-- /fc position (TOP | LEFT | BOTTOM | RIGHT)
+-- /fc scale <scale factor | AUTO>
+-- /fc contact <index> [<recipient> [<icon>]]
+-- /fc note <index> [<note>]
+-- /fc clicktosend [on|off]
 
 SLASH_FAVORITECONTACTS1, SLASH_FAVORITECONTACTS2 = '/favoritecontacts', '/fc'
 function SlashCmdList.FAVORITECONTACTS(msg)
@@ -102,12 +110,4 @@ function SlashCmdList.FAVORITECONTACTS(msg)
     end
 
     ADDON:OpenSettings()
-
-    --print("Syntax:")
-    --print("/fc size <column count> <rows count>")
-    --print("/fc position (TOP | LEFT | BOTTOM | RIGHT)")
-    --print("/fc scale <button scale factor>")
-    --print("/fc contact <index> [<recipient> [<icon>]]")
-    --print("/fc note <index> [<note>]")
-    --print("/fc clicktosend [on|off]")
 end
