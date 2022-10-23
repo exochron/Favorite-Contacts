@@ -1,12 +1,17 @@
-local ADDON_NAME, ADDON = ...
+local _, ADDON = ...
 
 -- see https://github.com/tomrus88/BlizzardInterfaceCode/blob/c1e5ba067e4ef6b72a824b57b2d104c65c047a3b/Interface/GlueXML/CharacterCreate.lua
 -- for new race and class icons
 
 ADDON.iconFiles = {
+    "INV_Misc_GroupLooking",
+    "ACHIEVEMENT_GUILDPERK_MOBILEBANKING",
+    "Garrison_Building_TradingPost",
+
     -- class
-    "ClassIcon_DeathKnight", "ClassIcon_DemonHunter", "ClassIcon_Druid", "ClassIcon_Hunter", "ClassIcon_Mage", "ClassIcon_Monk",
-    "ClassIcon_Paladin", "ClassIcon_Priest", "ClassIcon_Rogue", "ClassIcon_Shaman", "ClassIcon_Warlock", "ClassIcon_Warrior",
+    "ClassIcon_DeathKnight", "ClassIcon_DemonHunter", "ClassIcon_Druid", "classicon_evoker", "ClassIcon_Hunter",
+    "ClassIcon_Mage", "ClassIcon_Monk", "ClassIcon_Paladin", "ClassIcon_Priest", "ClassIcon_Rogue", "ClassIcon_Shaman",
+    "ClassIcon_Warlock", "ClassIcon_Warrior",
 
     -- people - uses texture atlas instead of plain textures
     "raceicon-human-female", "raceicon-human-male",
@@ -21,6 +26,8 @@ ADDON.iconFiles = {
     "raceicon-kultiran-female", "raceicon-kultiran-male",
     "raceicon-mechagnome-female", "raceicon-mechagnome-male",
     "raceicon-pandaren-female", "raceicon-pandaren-male",
+    "raceicon-dracthyr-female", "raceicon-dracthyr-male",
+    "raceicon-dracthyrvisage-female", "raceicon-dracthyrvisage-male",
     "raceicon-orc-female", "raceicon-orc-male",
     "raceicon-tauren-female", "raceicon-tauren-male",
     "raceicon-troll-female", "raceicon-troll-male",
@@ -34,28 +41,23 @@ ADDON.iconFiles = {
     "raceicon-vulpera-female", "raceicon-vulpera-male",
 
     --profession
-    "inv_misc_gem_01",
-    "Trade_Engraving",
-    "Trade_Engineering",
-    "Trade_Alchemy",
-    "inv_inscription_tradeskill01",
-    "Trade_Tailoring",
-    "inv_misc_armorkit_17",
-    "Trade_BlackSmithing",
-    "Trade_Herbalism",
-    "inv_misc_pelt_wolf_01",
-    "Trade_Mining",
+    "ui_profession_alchemy",
+    "ui_profession_blacksmithing",
+    "ui_profession_cooking",
+    "ui_profession_enchanting",
+    "ui_profession_engineering",
+    "ui_profession_fishing",
+    "ui_profession_herbalism",
+    "ui_profession_inscription",
+    "ui_profession_jewelcrafting",
+    "ui_profession_leatherworking",
+    "ui_profession_mining",
+    "ui_profession_skinning",
+    "ui_profession_tailoring",
     "trade_archaeology",
-    "inv_misc_food_15",
-    "Trade_Fishing",
     --"spell_holy_sealofsacrifice", -- first aid
 
     -- faction
     "INV_BannerPVP_01",
     "INV_BannerPVP_02",
-
-    "ACHIEVEMENT_GUILDPERK_MOBILEBANKING",
-    "Garrison_Building_TradingPost",
-
-    "INV_Misc_GroupLooking",
 }
