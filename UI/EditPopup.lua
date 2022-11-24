@@ -1,10 +1,8 @@
 local _, ADDON = ...
 
-local AceGUI = LibStub("AceGUI-3.0")
-
 local CONTACT_DEFAULT_ICON = "INV_Misc_GroupLooking"
 
-local popup, buttonContainer
+local popup, buttonContainer, activeContactIndex
 
 local function CreateWindow()
     local frame = CreateFrame("Frame", "FavoriteContactsEditFrame", UIParent)
@@ -12,7 +10,7 @@ local function CreateWindow()
 
     frame:EnableMouse(true)
     frame:SetWidth(419)
-    frame:SetHeight(492)
+    frame:SetHeight((min(ceil(#ADDON.iconFiles / 8), 8) * 45) + 132)
     frame:SetPoint("CENTER")
     frame:SetFrameStrata("DIALOG")
 
@@ -21,56 +19,53 @@ local function CreateWindow()
     tex:SetPoint("BOTTOMRIGHT", -7, 7)
     tex:SetColorTexture(0, 0, 0, 0.8)
 
-    local subFrame = CreateFrame("Frame", nil, frame, "SelectionFrameTemplate")
-    subFrame:SetPoint("TOPLEFT")
-    subFrame:SetPoint("BOTTOMRIGHT")
-
-    frame.BorderBox = subFrame
+    frame.BorderBox = CreateFrame("Frame", nil, frame, "SelectionFrameTemplate")
+    frame.BorderBox:SetPoint("TOPLEFT")
+    frame.BorderBox:SetPoint("BOTTOMRIGHT")
 
     -- ElvUI hack
-    if InboxFrame.backdrop then
+    if InboxFrame.backdrop and ElvUI then
         frame:StripTextures()
         frame:CreateBackdrop('Transparent')
         frame.backdrop:SetAllPoints()
-        subFrame:StripTextures()
+        frame.BorderBox:StripTextures()
+
+        local E, _ = unpack(ElvUI)
+        local S = E:GetModule('Skins')
+        S:HandleButton(frame.BorderBox.OkayButton, true)
+        S:HandleButton(frame.BorderBox.CancelButton, true)
     end
 
     return frame
 end
 
-local function UpdateForm(container)
-    local iconText = popup.BorderBox.IconName:GetText()
-
+local function UpdateForm(container, iconText)
     for _, widget in pairs(container.children) do
-        if iconText == widget:GetUserData("icon") then
-            widget:SetChecked(true)
-        else
-            widget:SetChecked(false)
-        end
+        widget:SetChecked(iconText == widget:GetUserData("icon"))
     end
 end
 
-local function CreateIconButtons(container)
+local function CreateIconButtons(AceGUI, container)
     for _, icon in pairs(ADDON.iconFiles) do
         local button = AceGUI:Create("FC_CheckedButton")
         ADDON:SetTexture(button.image, icon)
 
         button:SetUserData("icon", icon)
-        button:SetCallback("OnClick", function(widget)
-            popup.BorderBox.IconName:SetText(widget:GetUserData("icon"))
-            UpdateForm(container)
+        button:SetCallback("OnClick", function()
+            popup.BorderBox.IconName:SetText(icon)
+            UpdateForm(container, icon)
         end)
 
         container:AddChild(button)
     end
 end
 
-local function CreateEditBox(text)
+local function CreateEditBox(AceGUI, text, parent)
     local edit = AceGUI:Create("EditBox")
     edit:SetLabel(text)
-    edit:SetWidth(371)
     edit:SetHeight(22)
-    edit:SetParent({ content = popup.BorderBox })
+    edit:SetParent({ content = parent })
+    edit:SetPoint("RIGHT", -24, 0)
     edit:DisableButton(true)
 
     edit.label:ClearAllPoints()
@@ -85,80 +80,49 @@ local function CreateEditBox(text)
     return edit
 end
 
-local function CreateCloseButton(text, func)
-    local button = AceGUI:Create("Button")
-    button:SetAutoWidth(true)
-    button:SetText(text)
-    button:SetParent({ content = popup.BorderBox })
-    button:SetCallback("OnClick", function()
-        PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK)
-        popup:Hide()
-
-        if func then
-            func()
-        end
-    end)
-    button.frame:Show()
-
-    return button
-end
-
 local function CreateForm()
     local L = ADDON.L
+    local AceGUI = LibStub("AceGUI-3.0")
 
-    popup = CreateWindow()
+    local window = CreateWindow()
 
-    popup.BorderBox.ContactNameEditBox = CreateEditBox(L["Contact Name:"])
-    popup.BorderBox.ContactNameEditBox:SetPoint("TOPLEFT", 24, -14)
-    popup.BorderBox.NoteEditBox = CreateEditBox(L["Contact Note:"])
-    popup.BorderBox.NoteEditBox:SetPoint("TOPLEFT", 24, -36)
-    popup.BorderBox.IconName = CreateEditBox(MACRO_POPUP_CHOOSE_ICON)
-    popup.BorderBox.IconName:SetPoint("TOPLEFT", 24, -70)
-
-    local scrollcontainer = AceGUI:Create("SimpleGroup")
-    scrollcontainer:SetWidth(370)
-    scrollcontainer:SetHeight(360)
-    scrollcontainer:SetParent({ content = popup.BorderBox })
-    scrollcontainer:SetPoint("TOP", 0, -95)
-    scrollcontainer:SetLayout("Fill")
+    window.BorderBox.ContactNameEditBox = CreateEditBox(AceGUI, L["Contact Name:"], window.BorderBox)
+    window.BorderBox.ContactNameEditBox:SetPoint("TOPLEFT", 24, -14)
+    window.BorderBox.NoteEditBox = CreateEditBox(AceGUI, L["Contact Note:"], window.BorderBox)
+    window.BorderBox.NoteEditBox:SetPoint("TOPLEFT", 24, -36)
+    window.BorderBox.IconName = CreateEditBox(AceGUI, MACRO_POPUP_CHOOSE_ICON, window.BorderBox)
+    window.BorderBox.IconName:SetPoint("TOPLEFT", 24, -70)
 
     buttonContainer = AceGUI:Create("ScrollFrame")
+    buttonContainer:SetParent({ content = window.BorderBox })
+    buttonContainer:SetPoint("TOPLEFT", 24, -95)
+    buttonContainer:SetPoint("BOTTOMRIGHT", -24, 35)
     buttonContainer:SetLayout("Flow")
-    scrollcontainer:AddChild(buttonContainer)
+    buttonContainer.frame:Show()
 
-    CreateIconButtons(buttonContainer)
+    CreateIconButtons(AceGUI, buttonContainer)
 
-    popup:HookScript("OnShow", function()
+    window:HookScript("OnShow", function()
         ADDON:SetEnableContacts(false)
     end)
-    popup:HookScript("OnHide", function()
+    window:HookScript("OnHide", function()
         ADDON:SetEnableContacts(true)
     end)
 
-    popup.BorderBox.OkayButton:Hide()
-    popup.BorderBox.CancelButton:Hide()
-
-    local cancelButton = CreateCloseButton(CANCEL)
-    cancelButton:SetPoint("BOTTOMRIGHT", -11, 11)
-
-    local okayButton = CreateCloseButton(OKAY, function()
-        local index = popup.index
-        local recipient = popup.BorderBox.ContactNameEditBox:GetText()
-        local note = popup.BorderBox.NoteEditBox:GetText()
-
-        local icon = popup.BorderBox.IconName:GetText()
-        if (not icon or string.len(icon) == 0) then
-            icon = CONTACT_DEFAULT_ICON
-        end
-
+    window.BorderBox.OnCancel = function() window:Hide() end
+    window.BorderBox.OnOkay = function()
+        window:Hide()
+        local recipient = window.BorderBox.ContactNameEditBox:GetText()
         if recipient ~= "" then
-            ADDON:SetContact(index, recipient, icon, note)
+            local icon = window.BorderBox.IconName:GetText()
+            if not icon or string.len(icon) == 0 then
+                icon = CONTACT_DEFAULT_ICON
+            end
+            ADDON:SetContact(activeContactIndex, recipient, icon, window.BorderBox.NoteEditBox:GetText())
         end
-    end)
-    okayButton:SetWidth(math.max(cancelButton.frame:GetWidth(), 78))
-    okayButton:SetPoint("RIGHT", cancelButton.frame, "LEFT", -2, 0)
+    end
 
-    return popup
+    return window
 end
 
 function ADDON:ShowEditContactPopup(index)
@@ -166,20 +130,19 @@ function ADDON:ShowEditContactPopup(index)
         popup = CreateForm()
     end
 
-    popup.index = index
+    activeContactIndex = index
 
     local contact = self.settings.contacts[index] or {}
 
     local nameEdit = popup.BorderBox.ContactNameEditBox
     nameEdit:SetText(contact.recipient or "")
 
-    local noteEdit = popup.BorderBox.NoteEditBox
-    noteEdit:SetText(contact.note or "")
+    popup.BorderBox.NoteEditBox:SetText(contact.note or "")
 
-    local iconEdit = popup.BorderBox.IconName
-    iconEdit:SetText(contact.icon or CONTACT_DEFAULT_ICON)
+    local icon = contact.icon or CONTACT_DEFAULT_ICON
+    popup.BorderBox.IconName:SetText(icon)
 
-    UpdateForm(buttonContainer)
+    UpdateForm(buttonContainer, icon)
     popup:Show()
     nameEdit:SetFocus()
 
