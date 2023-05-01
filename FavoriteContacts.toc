@@ -1,6 +1,7 @@
-## Interface: 100007
+## Interface: 100100
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox to easily access your favorite contacts
+## IconTexture: Interface\MailFrame\Mail-Icon
 ## Author: eXochron
 ## Version: @project-version@
 ## SavedVariables: FavoriteContactsSettings
