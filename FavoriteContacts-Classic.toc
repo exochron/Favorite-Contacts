@@ -1,4 +1,4 @@
-## Interface: 11403
+## Interface: 11404
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox to easily access your favorite contacts
 ## Author: eXochron

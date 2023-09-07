@@ -1,4 +1,4 @@
-## Interface: 100105
+## Interface: 100107
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox to easily access your favorite contacts
 ## IconTexture: Interface\MailFrame\Mail-Icon
