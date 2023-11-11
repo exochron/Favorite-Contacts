@@ -2,6 +2,11 @@ local _, ADDON = ...
 
 local CONTACT_DEFAULT_ICON = "INV_Misc_GroupLooking"
 
+-- fallback icon for classic
+if not tContains(ADDON.iconFiles, CONTACT_DEFAULT_ICON) then
+    CONTACT_DEFAULT_ICON = "inv_misc_food_15"
+end
+
 local popup, buttonContainer, activeContactIndex
 
 local function CreateWindow()
