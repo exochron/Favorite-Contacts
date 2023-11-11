@@ -11,12 +11,14 @@ L["Contact added (Position: %d, Recipient: %s, Icon: %s)"] = "Contact added (Pos
 L["Contact Name:"] = "Contact Name:"
 L["Contact Note:"] = "Contact Note:"
 L["Contact removed (Position: %d)"] = "Contact removed (Position: %d)"
-L["Create"] = "Create"
+L["Create"] = CREATE or "Create"
 L["No Contact on position %d"] = "No Contact on position %d"
 L["Note changed to %s (Position: %d)"] = "Note changed to %s (Position: %d)"
 L["Note removed (Position: %d)"] = "Note removed (Position: %d)"
-L["Position set to %s"] = "Position gesetzt auf %s"
+L["Position set to %s"] = "Position set to %s"
 L["Size changed to %dx%d"] = "Size changed to %dx%d"
+L["CREATE_CONTACT_TITLE"] = "Create Contact"
+L["EDIT_CONTACT_TITLE"] = "Edit Contact"
 
 -- Settings
 L["SETTING_CLICKTOSEND_LABEL"] = "Send mail with click on contact"
