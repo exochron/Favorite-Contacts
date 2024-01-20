@@ -26,3 +26,6 @@ UI\DragCursor.lua
 SlashCommand.lua
 SettingsPanel.lua
 ThirdPartySupport.lua
+#@do-not-package@
+DevZone\Screenshot.lua
+#@end-do-not-package@

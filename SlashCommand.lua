@@ -109,5 +109,10 @@ function SlashCmdList.FAVORITECONTACTS(msg)
         end
     end
 
+    if ADDON.TakeScreenshots and command == "screenshot" then
+        ADDON:TakeScreenshots()
+        return
+    end
+
     ADDON:OpenSettings()
 end
