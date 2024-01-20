@@ -56,7 +56,10 @@ local function UpdateForm(container, iconText)
     for _, widget in pairs(container.children) do
         widget:SetChecked(iconText == widget:GetUserData("icon"))
     end
-    ADDON:SetTexture(popup.portrait or popup:GetPortrait(), iconText)
+    local portrait = popup.portrait or popup:GetPortrait()
+    portrait:SetMask("") -- reset mask; cant set tex coordinates with mask
+    ADDON:SetTexture(portrait, iconText)
+    portrait:SetMask("Interface/CHARACTERFRAME/TempPortraitAlphaMask")
 end
 
 local function CreateIconButtons(AceGUI, container)
