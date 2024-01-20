@@ -1,6 +1,30 @@
+tools-used:
+    - gallery-generator
+
+externals:
+    Libs/LibStub:
+        url: https://repos.wowace.com/wow/libstub/trunk
+        curse-slug: libstub
+
+    Libs/AceGUI-3.0:
+        url: https://repos.wowace.com/wow/ace3/trunk/AceGUI-3.0/
+        tag: latest
+        curse-slug: ace3
+
+    Libs/TaintLess:
+        url: https://www.townlong-yak.com/addons.git/taintless
+        commit: default
+
 ignore:
     - LICENSE
     - README.md
     - CHANGELOG.md
+    - DevZone
+    - Images
+    - Libs/*/LICENSE
+    - Libs/*.toc
+    - Libs/LibStub/tests
 
 license-output: LICENSE
+
+enable-nolib-creation: no
