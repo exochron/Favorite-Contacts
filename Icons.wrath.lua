@@ -5,6 +5,18 @@ ADDON.iconFiles = {
     "spell_deathknight_classicon", "ClassIcon_Druid", "ClassIcon_Hunter", "ClassIcon_Mage", "ClassIcon_Paladin", "ClassIcon_Priest",
     "ClassIcon_Rogue", "ClassIcon_Shaman", "ClassIcon_Warlock", "ClassIcon_Warrior",
 
+    --specialisations
+    "Spell_Deathknight_BloodPresence", "Spell_Deathknight_FrostPresence","Spell_Deathknight_UnholyPresence",
+    "Spell_Nature_StarFall","Ability_druid_catform","Ability_racial_bearform","Spell_nature_healingtouch",
+    "ability_hunter_beasttaming","ability_marksmanship","ability_hunter_swiftstrike",
+    "Spell_holy_magicalsentry","Spell_fire_firebolt02","Spell_frost_frostbolt02",
+    "Spell_holy_holybolt","Ability_paladin_shieldofthetemplar","Spell_holy_auraoflight",
+    "Spell_holy_powerwordshield","Spell_holy_guardianspirit","Spell_shadow_shadowwordpain",
+    "Ability_rogue_deadlybrew", "Inv_sword_30", "Ability_stealth",
+    "Spell_nature_lightning", "Spell_shaman_improvedstormstrike", "Spell_nature_magicimmunity",
+    "Spell_shadow_deathcoil", "Spell_shadow_metamorphosis", "Spell_shadow_rainoffire",
+    "Ability_warrior_savageblow", "Ability_warrior_innerrage", "Ability_warrior_defensivestance",
+
     -- people - uses plain textures with coordinates
     "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Races,0,0.125,0,0.25", --HUMAN_MALE
     "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Races,0,0.125,0.5,0.75", --HUMAN_FEMALE
