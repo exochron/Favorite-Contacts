@@ -4,41 +4,29 @@ local CONTACT_DEFAULT_ICON = "INV_Misc_GroupLooking"
 
 local contextMenu
 local contextMenuIndex
+local contextMenuContainer
 local currentDragContact = 0
 local clickTime = 0
 
 local AceGUI = LibStub("AceGUI-3.0")
 
-local function SendMail()
-    if SendMailMailButton:IsVisible() and SendMailMailButton:IsEnabled() then
-        SendMailMailButton:Click()
-    end
-end
-
-local function OnContactButtonClicked(button, event, buttonType)
+local function OnContactButtonClicked(button, _, buttonType)
     if currentDragContact ~= 0 then
         ADDON:StopDrag(button.index)
         return
     end
 
+    local container = button.parent
+
     if buttonType == "LeftButton" then
         if button.index then
-            local contact = ADDON.settings.contacts[button.index]
+            local contact = ADDON:GetContact(container.Module, button.index)
             if contact then
-                MailFrameTab_OnClick(nil, 2)
-                SendMailNameEditBox:SetText(contact.recipient)
-                SendMailSubjectEditBox:SetFocus()
-
-                if CursorHasItem() then
-                    SendMailAttachmentButton_OnDropAny()
-                end
-                if ADDON.settings.clickToSend then
-                    SendMail()
-                end
+                button.parent:ContactHandler(contact)
             else
                 -- DoubleClick on empty button
                 if GetTime() - clickTime < 0.5 then
-                    ADDON:ShowEditContactPopup(button.index)
+                    ADDON:ShowEditContactPopup(button.index, container)
                 end
                 clickTime = GetTime()
             end
@@ -48,20 +36,21 @@ local function OnContactButtonClicked(button, event, buttonType)
 
     if buttonType == "RightButton" then
         contextMenuIndex = button.index
+        contextMenuContainer = container
         ToggleDropDownMenu(1, nil, contextMenu, button.frame, 0, 0)
         return
     end
 end
 
-local function CreateContactButton(index)
-    local button = ADDON.contactButtons[index]
+local function CreateContactButton(index, container)
+    local button = container.contactButtons[index]
 
     if button then
         return button
     end
 
     button = AceGUI:Create("Icon")
-    ADDON.contactContainer:AddChild(button)
+    container:AddChild(button)
 
     button:SetImageSize(ADDON.CONTACT_BUTTON_SIZE, ADDON.CONTACT_BUTTON_SIZE)
     button:SetHeight(ADDON.CONTACT_BUTTON_SIZE)
@@ -75,7 +64,7 @@ local function CreateContactButton(index)
         if (not widget.index) then
             return
         end
-        local contact = ADDON.settings.contacts[widget.index]
+        local contact = ADDON:GetContact(container.Module, widget.index)
         if not contact then
             return
         end
@@ -113,8 +102,8 @@ local function CreateContactButton(index)
         if not widget.disabled then
             ADDON:StopDrag(widget.index)
 
-            if (false == ADDON.contactContainer.content:IsMouseOver()) then
-                ADDON:DeleteContact(currentDragContact)
+            if (false == container.content:IsMouseOver()) then
+                ADDON:DeleteContact(container.Module, currentDragContact)
                 currentDragContact = 0
             end
         end
@@ -122,7 +111,7 @@ local function CreateContactButton(index)
     button:SetCallback("OnReceiveDrag", function(widget)
         if not widget.disabled then
             if currentDragContact ~= 0 then
-                ADDON:SwapContacts(currentDragContact, widget.index)
+                ADDON:SwapContacts(container.Module, currentDragContact, widget.index)
                 currentDragContact = 0
             elseif CursorHasItem() then
                 OnContactButtonClicked(button, "OnClick", "LeftButton")
@@ -132,19 +121,19 @@ local function CreateContactButton(index)
 
     button.index = index
 
-    ADDON.contactButtons[index] = button
+    container.contactButtons[index] = button
 
     return button
 end
 
-function ADDON:UpdateContactButton(index)
-    if (index < 1 and index > self.settings.columnCount * self.settings.rowCount) then
+function ADDON:UpdateContactButton(index, container)
+    if (index < 1 and index > ADDON:GetTotalButtonCount(container.Module)) then
         return
     end
 
-    local button = CreateContactButton(index)
+    local button = CreateContactButton(index, container)
 
-    local contact = self.settings.contacts[index]
+    local contact = ADDON:GetContact(container.Module, index)
     if (contact) then
         local icon = contact.icon
         if (not icon or string.len(icon) == 0) then
@@ -159,21 +148,27 @@ function ADDON:UpdateContactButton(index)
     end
 end
 
-function ADDON:UpdateContactButtons()
-    for index = 1, (self.settings.columnCount * self.settings.rowCount) do
-        self:UpdateContactButton(index)
+function ADDON:UpdateContactButtons(container)
+    local buttonCount = ADDON:GetTotalButtonCount(container.Module)
+    for index = 1, buttonCount do
+        self:UpdateContactButton(index, container)
     end
 end
 
-local function InitButtonMenu(sender, level)
+local function InitButtonMenu(_, level)
     local info
-    local contact = ADDON.settings.contacts[contextMenuIndex]
+    local container = contextMenuContainer
+    if not container then
+        return
+    end
+
+    local contact = ADDON:GetContact(container.Module, contextMenuIndex)
     if contact then
         info = {
             notCheckable = true,
             text = EDIT,
             func = function()
-                ADDON:ShowEditContactPopup(contextMenuIndex)
+                ADDON:ShowEditContactPopup(contextMenuIndex, container)
             end,
         }
         UIDropDownMenu_AddButton(info, level)
@@ -182,7 +177,7 @@ local function InitButtonMenu(sender, level)
             notCheckable = true,
             text = DELETE,
             func = function()
-                ADDON:DeleteContact(contextMenuIndex)
+                ADDON:DeleteContact(container.Module, contextMenuIndex)
             end,
         }
         UIDropDownMenu_AddButton(info, level)
@@ -191,7 +186,7 @@ local function InitButtonMenu(sender, level)
             notCheckable = true,
             text = ADDON.L["Create"],
             func = function()
-                ADDON:ShowEditContactPopup(contextMenuIndex)
+                ADDON:ShowEditContactPopup(contextMenuIndex, container)
             end,
         }
         UIDropDownMenu_AddButton(info, level)
@@ -205,9 +200,7 @@ local function InitButtonMenu(sender, level)
     UIDropDownMenu_AddButton(info, level)
 end
 
-ADDON:RegisterLoadUICallback(function()
-    ADDON:UpdateContactButtons()
-
-    contextMenu = CreateFrame("Frame", ADDON_NAME .. "ContactButtonContextMenu", ADDON.contactContainer.content, "UIDropDownMenuTemplate")
+ADDON.Events:RegisterCallback('LoadUI', function()
+    contextMenu = CreateFrame("Frame", ADDON_NAME .. "ContactButtonContextMenu", nil, "UIDropDownMenuTemplate")
     UIDropDownMenu_Initialize(contextMenu, InitButtonMenu, "MENU")
-end)
+end, 'contact-button')

@@ -22,7 +22,7 @@ function SlashCmdList.FAVORITECONTACTS(msg)
         local columnCount = tonumber(parameter1)
         local rowCount = tonumber(parameter2)
         if (type(columnCount) == "number" and type(rowCount) == "number") then
-            ADDON:SetSize(columnCount, rowCount)
+            ADDON:SetSize('mail', columnCount, rowCount)
             print(string.format("Favorite Contacts: " .. L["Size changed to %dx%d"], columnCount, rowCount))
             return
         end
@@ -34,14 +34,14 @@ function SlashCmdList.FAVORITECONTACTS(msg)
         local icon = tostring(parameter3)
         if (type(index) == "number" and index >= 1) then
             if (recipient and string.len(recipient) > 0) then
-                ADDON:SetContact(index, recipient, icon)
+                ADDON:SetContact('mail', index, recipient, icon)
                 if (not icon or string.len(icon) == 0) then
                     icon = "<empty>"
                 end
                 print(string.format("Favorite Contacts: " .. L["Contact added (Position: %d, Recipient: %s, Icon: %s)"], index, recipient, icon))
                 return
             else
-                ADDON:DeleteContact(index, true)
+                ADDON:DeleteContact('mail', index, true)
                 print(string.format("Favorite Contacts: " .. L["Contact removed (Position: %d)"], index))
                 return
             end

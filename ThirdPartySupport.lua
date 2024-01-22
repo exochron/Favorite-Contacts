@@ -1,4 +1,4 @@
-local ADDON_NAME, ADDON = ...
+local _, ADDON = ...
 
 local function SupportBulkMailInbox()
     if BulkMailInbox then
@@ -12,7 +12,7 @@ local function SupportBulkMailInbox()
         end)
     end
 end
-ADDON:RegisterLoginCallback(SupportBulkMailInbox)
+ADDON.Events:RegisterCallback('Login', SupportBulkMailInbox, 'bulkmail-inbox')
 
 local function SupportBulkMail()
     if BulkMail then
@@ -27,4 +27,4 @@ local function SupportBulkMail()
         end)
     end
 end
-ADDON:RegisterLoginCallback(SupportBulkMail)
+ADDON.Events:RegisterCallback('Login', SupportBulkMail, 'bulkmail')

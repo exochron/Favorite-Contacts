@@ -165,13 +165,13 @@ local function RefreshHandler(frame)
 end
 
 local function OKHandler(frame)
-    ADDON:SetPosition(frame.positionDropDown:GetValue())
-    ADDON:SetSize(frame.columnSlider:GetValue(), frame.rowSlider:GetValue())
+    ADDON:SetPosition('mail', frame.positionDropDown:GetValue())
+    ADDON:SetSize('mail', frame.columnSlider:GetValue(), frame.rowSlider:GetValue())
 
     if frame.scaleRadioAuto:GetValue() then
-        ADDON:SetScale("AUTO")
+        ADDON:SetScale('mail', "AUTO")
     else
-        ADDON:SetScale(frame.scaleEditManual.editbox:GetNumber())
+        ADDON:SetScale('mail', frame.scaleEditManual.editbox:GetNumber())
     end
 
     ADDON.settings.clickToSend = frame.clickCheck:GetValue()
@@ -179,7 +179,7 @@ local function OKHandler(frame)
 end
 
 local categoryID
-ADDON:RegisterLoginCallback(function()
+ADDON.Events:RegisterCallback('Login', function()
     local group = BuildFrame()
     group:SetCallback("refresh", RefreshHandler)
     group:SetCallback("okay", OKHandler)
@@ -194,7 +194,7 @@ ADDON:RegisterLoginCallback(function()
         -- classics
         InterfaceOptions_AddCategory(group.frame)
     end
-end)
+end, 'settings-panel')
 
 function ADDON:OpenSettings()
     if categoryID and Settings and Settings.OpenToCategory then

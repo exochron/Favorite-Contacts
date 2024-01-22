@@ -23,6 +23,7 @@ UI\ContactContainer.lua
 UI\ContactButton.lua
 UI\EditPopup.lua
 UI\DragCursor.lua
+UI\MailModule.lua
 SlashCommand.lua
 SettingsPanel.lua
 ThirdPartySupport.lua
