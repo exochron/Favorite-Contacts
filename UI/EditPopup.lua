@@ -7,7 +7,7 @@ if not tContains(ADDON.iconFiles, CONTACT_DEFAULT_ICON) then
     CONTACT_DEFAULT_ICON = "inv_misc_food_15"
 end
 
-local popup, buttonContainer, activeContactIndex
+local popup, buttonContainer, activeContactIndex, activeContactModule
 
 local function CreateWindow()
     local AceGUI = LibStub("AceGUI-3.0")
@@ -17,7 +17,6 @@ local function CreateWindow()
 
     frame:SetWidth(419)
     frame:SetHeight((min(ceil(#ADDON.iconFiles / 8), 8) * 45) + 191)
-    frame:SetPoint("TOPLEFT", MailFrame, "TOPRIGHT", MailFrame:GetAttribute("UIPanelLayout-extraWidth"), 0)
     frame:SetFrameStrata("DIALOG")
 
     frame.ScrollFrame = CreateFrame("ScrollFrame", nil, frame, "ScrollFrameTemplate")
@@ -129,9 +128,6 @@ local function CreateForm()
 
     CreateIconButtons(AceGUI, buttonContainer)
 
-    window:HookScript("OnShow", function()
-        ADDON:SetEnableContacts(false)
-    end)
     window:HookScript("OnHide", function()
         ADDON:SetEnableContacts(true)
     end)
@@ -144,19 +140,29 @@ local function CreateForm()
             if not icon or string.len(icon) == 0 then
                 icon = CONTACT_DEFAULT_ICON
             end
-            ADDON:SetContact(activeContactIndex, recipient, icon, window.NoteEditBox:GetText())
+            ADDON:SetContact(activeContactModule, activeContactIndex, recipient, icon, window.NoteEditBox:GetText())
         end
     end)
 
     return window
 end
 
-function ADDON:ShowEditContactPopup(index)
+local hookedModules = {}
+
+function ADDON:ShowEditContactPopup(index, container)
     if not popup then
         popup = CreateForm()
     end
 
     activeContactIndex = index
+    activeContactModule = container.Module
+    if not hookedModules[activeContactModule] then
+        container.frame:HookScript("OnHide", function()
+            popup:Hide()
+        end)
+
+        hookedModules[activeContactModule] = true
+    end
 
     local contact = self.settings.contacts[index] or {}
 
@@ -171,6 +177,7 @@ function ADDON:ShowEditContactPopup(index)
     popup.IconName:SetText(icon)
 
     UpdateForm(buttonContainer, icon)
+    popup:SetPoint("TOPLEFT", container.AttachFrame, "TOPRIGHT", container.AttachFrame:GetAttribute("UIPanelLayout-extraWidth"), 0)
     popup:Show()
     nameEdit:SetFocus()
 

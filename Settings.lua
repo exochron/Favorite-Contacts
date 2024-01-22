@@ -1,4 +1,4 @@
-local ADDON_NAME, ADDON = ...
+local _, ADDON = ...
 
 FavoriteContactsSettings = FavoriteContactsSettings or {}
 
@@ -9,7 +9,6 @@ local defaultSettings = {
     position = "RIGHT",
     scale = "AUTO",
     clickToSend = false,
-    reorderContacts = true,
     switchTabOnEmptyInbox = true,
 }
 
@@ -42,30 +41,8 @@ local function CombineSettings(settings, defaultSettings)
     end
 end
 
-local function CheckContactOrder()
-    -- [2.1] With AceGui we're now arranging the buttons from left to right. prior it was per column from top to bottom.
-    if ADDON.settings.reorderContacts and #ADDON.settings.contacts > 0 and ADDON.settings.rowCount > 1 and ADDON.settings.columnCount > 1 then
-        local mappedContacts = {}
-        local rows = ADDON.settings.rowCount
-        local cols = ADDON.settings.columnCount
-        for index, contact in pairs(ADDON.settings.contacts) do
-            local x = ceil(index / rows)
-            local y = mod(index, rows)
-            if y == 0 then
-                y = rows
-            end
-            local mappedIndex = (y-1) * cols + x
-            mappedContacts[mappedIndex] = contact
-        end
-
-        ADDON.settings.contacts = mappedContacts
-    end
-
-    ADDON.settings.reorderContacts = false
-end
-
 -- Settings have to be loaded during PLAYER_LOGIN
-ADDON:RegisterLoginCallback(function()
+ADDON.Events:RegisterCallback('PreLogin', function()
     local realmName = "realm_" .. GetRealmName()
 
     if not FavoriteContactsSettings[realmName] then
@@ -74,6 +51,4 @@ ADDON:RegisterLoginCallback(function()
 
     CombineSettings(FavoriteContactsSettings[realmName], defaultSettings)
     ADDON.settings = FavoriteContactsSettings[realmName]
-
-    CheckContactOrder()
-end)
+end, 'settings')

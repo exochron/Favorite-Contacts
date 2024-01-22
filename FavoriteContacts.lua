@@ -2,44 +2,36 @@ local ADDON_NAME, ADDON = ...
 
 local CONFIRM_DELETE_CONTACT = ADDON_NAME .. "_CONFIRM_DELETE_CONTACT"
 
-ADDON.contactContainer = nil
-ADDON.contactButtons = {}
+-- see: https://www.townlong-yak.com/framexml/live/CallbackRegistry.lua
+ADDON.Events = CreateFromMixins(EventRegistry)
+ADDON.Events:OnLoad()
+ADDON.Events:SetUndefinedEventsAllowed(true)
 
-local isUILoaded
+local modules = {}
 
---region callbacks
-local loginCallbacks, loadUICallbacks = {}, {}
-function ADDON:RegisterLoginCallback(func)
-    table.insert(loginCallbacks, func)
+function ADDON:RegisterModule(name, settingsTable)
+    modules[name] = settingsTable
 end
-
-function ADDON:RegisterLoadUICallback(func)
-    table.insert(loadUICallbacks, func)
-end
-
-local function FireCallbacks(callbacks)
-    for _, callback in pairs(callbacks) do
-        callback()
-    end
-end
---endregion
 
 function ADDON:SetEnableContacts(enabled)
-    for _, button in pairs(ADDON.contactButtons) do
-        button:SetDisabled(not enabled)
-    end
+    self.Events:TriggerEvent("ContainerEnabled", enabled)
 end
 
-function ADDON:SetContact(index, recipient, icon, note)
-    self.settings.contacts[index] = self.settings.contacts[index] or {}
-    local contact = self.settings.contacts[index]
+function ADDON:SetContact(module, index, recipient, icon, note)
+    modules[module].contacts[index] = modules[module].contacts[index] or {}
+    local contact = modules[module].contacts[index]
     contact.recipient = recipient
     contact.icon = icon
     contact.note = note
 
-    if isUILoaded then
-        self:UpdateContactButton(index)
-    end
+    self.Events:TriggerEvent("ContactUpdated", module, index)
+end
+
+function ADDON:GetContact(module, index)
+    return modules[module].contacts[index]
+end
+function ADDON:GetTotalButtonCount(module)
+    return modules[module].columnCount * modules[module].rowCount
 end
 
 StaticPopupDialogs[CONFIRM_DELETE_CONTACT] = {
@@ -53,99 +45,72 @@ StaticPopupDialogs[CONFIRM_DELETE_CONTACT] = {
     preferredIndex = 3,
 }
 
-function ADDON:DeleteContact(index, confirmed)
+function ADDON:DeleteContact(module, index, confirmed)
     if (not confirmed) then
-        if isUILoaded then
-            self:SetEnableContacts(false)
-        end
+        self:SetEnableContacts(false)
 
         StaticPopupDialogs[CONFIRM_DELETE_CONTACT].OnAccept = function()
-            self:DeleteContact(index, true)
-            if isUILoaded then
-                self:SetEnableContacts(true)
-            end
+            self:DeleteContact(module, index, true)
+            self:SetEnableContacts(true)
         end
         StaticPopupDialogs[CONFIRM_DELETE_CONTACT].OnCancel = function()
-            if isUILoaded then
-                self:SetEnableContacts(true)
-            end
+            self:SetEnableContacts(true)
         end
         StaticPopup_Show(CONFIRM_DELETE_CONTACT)
         return
     end
 
-    self.settings.contacts[index] = nil
+    modules[module].contacts[index] = nil
 
-    if isUILoaded then
-        self:UpdateContactButton(index)
-    end
+    self.Events:TriggerEvent("ContactUpdated", module, index)
 end
 
-function ADDON:SwapContacts(index1, index2)
-    if (index1 < 1 or index1 > (self.settings.columnCount * self.settings.rowCount)) then
+function ADDON:SwapContacts(module, index1, index2)
+    if (index1 < 1 or index1 > (modules[module].columnCount * modules[module].rowCount)) then
         return
     end
 
-    if (index2 < 1 or index2 > (self.settings.columnCount * self.settings.rowCount)) then
+    if (index2 < 1 or index2 > (modules[module].columnCount * modules[module].rowCount)) then
         return
     end
 
-    local contact1 = self.settings.contacts[index1]
-    local contact2 = self.settings.contacts[index2]
+    local contact1 = modules[module].contacts[index1]
+    local contact2 = modules[module].contacts[index2]
 
-    self.settings.contacts[index1] = contact2
-    self.settings.contacts[index2] = contact1
+    modules[module].contacts[index1] = contact2
+    modules[module].contacts[index2] = contact1
 
-    if isUILoaded then
-        self:UpdateContactButton(index1)
-        self:UpdateContactButton(index2)
+    self.Events:TriggerEvent("ContactUpdated", module, index1)
+    self.Events:TriggerEvent("ContactUpdated", module, index2)
+end
+
+function ADDON:SetSize(module, columnCount, rowCount)
+    if modules[module].columnCount ~= columnCount or modules[module].rowCount ~= rowCount then
+        modules[module].columnCount = columnCount
+        modules[module].rowCount = rowCount
+
+        self.Events:TriggerEvent("ContainerUpdated", module)
     end
 end
 
-function ADDON:SetSize(columnCount, rowCount)
-    if ADDON.settings.columnCount ~= columnCount or ADDON.settings.rowCount ~= rowCount then
-        ADDON.settings.columnCount = columnCount
-        ADDON.settings.rowCount = rowCount
-
-        if isUILoaded then
-            -- clear all buttons and generate them again
-            self.contactContainer:ReleaseChildren()
-            self.contactButtons = {}
-
-            ADDON:UpdateContactContainer()
-            ADDON:UpdateContactButtons()
-        end
+function ADDON:SetPosition(module, position)
+    if modules[module].position ~= position then
+        modules[module].position = position
+        self.Events:TriggerEvent("ContainerUpdated", module)
     end
 end
 
-function ADDON:SetPosition(position)
-    if ADDON.settings.position ~= position then
-        ADDON.settings.position = position
-        if isUILoaded then
-            ADDON:UpdateContactContainer()
-        end
-    end
-end
-
-function ADDON:SetScale(scale)
-    if ADDON.settings.scale ~= scale then
-        ADDON.settings.scale = scale
-        if isUILoaded then
-            ADDON:UpdateContactContainer()
-        end
+function ADDON:SetScale(module, scale)
+    if modules[module].scale ~= scale then
+        modules[module].scale = scale
+        self.Events:TriggerEvent("ContainerUpdated", module)
     end
 end
 
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_LOGIN")
-frame:SetScript("OnEvent", function(self, event, arg1)
-
-    FireCallbacks(loginCallbacks)
-
-    MailFrame:HookScript("OnShow", function()
-        if not isUILoaded then
-            FireCallbacks(loadUICallbacks)
-            isUILoaded = true
-        end
-    end)
+frame:SetScript("OnEvent", function()
+    ADDON.Events:TriggerEvent("PreLogin")
+    ADDON.Events:TriggerEvent("Login")
+    ADDON.Events:UnregisterEvents({"PreLogin", "Login"})
 end)
