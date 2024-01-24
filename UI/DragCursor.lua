@@ -37,8 +37,8 @@ local function CreateDragIcon()
 end
 ADDON.Events:RegisterCallback('LoadUI',CreateDragIcon, 'drag-cursor')
 
-function ADDON:StartDrag(index)
-    local contact = self.settings.contacts[index]
+function ADDON:StartDrag(module, index)
+    local contact = ADDON:GetContact(module, index)
     if (not contact) then
         return
     end

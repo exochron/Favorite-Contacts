@@ -24,6 +24,7 @@ UI\ContactButton.lua
 UI\EditPopup.lua
 UI\DragCursor.lua
 UI\MailModule.lua
+UI\CraftOrderModule.lua
 SlashCommand.lua
 AddonCompartment.lua
 SettingsPanel.lua

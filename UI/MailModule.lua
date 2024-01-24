@@ -14,7 +14,11 @@ ADDON.Events:RegisterCallback('Login', function()
     ADDON:RegisterModule(MODULE_NAME, ADDON.settings)
 
     MailFrame:HookScript("OnShow", function()
-        if not container and ADDON.settings.position ~= "NONE" then
+        if ADDON.settings.position == "NONE" then
+            return
+        end
+
+        if not container then
             ADDON.Events:TriggerEvent("LoadUI")
             ADDON.Events:UnregisterEvents({"LoadUI"})
 
@@ -36,14 +40,14 @@ ADDON.Events:RegisterCallback('Login', function()
 
             ADDON:UpdateContactContainer(container, ADDON.settings)
             ADDON:UpdateContactButtons(container)
+
+            MailFrame:HookScript("OnHide", function()
+                container.frame:Hide()
+            end)
         end
-        if ADDON.settings.position ~= "NONE" then
-            container.frame:Show()
-        end
+
+        container.frame:Show()
     end )
-    MailFrame:HookScript("OnHide", function()
-        container.frame:Hide()
-    end)
 end)
 
 ADDON.Events:RegisterCallback("ContactUpdated", function(_, module, index)

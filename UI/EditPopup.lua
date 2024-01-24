@@ -164,7 +164,7 @@ function ADDON:ShowEditContactPopup(index, container)
         hookedModules[activeContactModule] = true
     end
 
-    local contact = self.settings.contacts[index] or {}
+    local contact = ADDON:GetContact(activeContactModule, index) or {}
 
     popup:SetTitle(contact.recipient and ADDON.L.EDIT_CONTACT_TITLE or ADDON.L.CREATE_CONTACT_TITLE)
 
