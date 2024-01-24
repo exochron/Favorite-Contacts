@@ -12,6 +12,16 @@ local defaultSettings = {
     switchTabOnEmptyInbox = true,
 }
 
+if LE_EXPANSION_LEVEL_CURRENT >= LE_EXPANSION_DRAGONFLIGHT then
+    defaultSettings['craftOrder'] = {
+        contacts = {},
+        columnCount = 2,
+        rowCount = 12,
+        position = "RIGHT",
+        scale = "AUTO",
+    }
+end
+
 function ADDON:ResetUISettings()
     ADDON.settings.columnCount = 2
     ADDON.settings.rowCount = 9

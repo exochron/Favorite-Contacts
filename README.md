@@ -1,5 +1,7 @@
 # Favorite Contacts
 
+__New:__ Extra contact bars for Crafting Orders! (in Retail)
+
 Favorite Contacts adds more buttons to your mailbox to easily access your favorite contacts. If you click a contact
 button, the recipient of the new mail is directly set to the contact name.
 

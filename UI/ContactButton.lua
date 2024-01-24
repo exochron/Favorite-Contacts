@@ -94,7 +94,7 @@ local function CreateContactButton(index, container)
 
     button:SetCallback("OnDragStart", function(widget)
         if not widget.disabled then
-            ADDON:StartDrag(widget.index)
+            ADDON:StartDrag(container.Module, widget.index)
             currentDragContact = widget.index
         end
     end)
