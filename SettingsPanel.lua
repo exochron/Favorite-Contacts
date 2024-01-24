@@ -15,7 +15,7 @@ local function BuildHeader(parent, text, offsetY)
     return header
 end
 
-local function BuildRadio(parent, text, offsetY, otherRadio, callback)
+local function BuildRadio(parent, text, offsetY,  callback)
     local button = AceGUI:Create("CheckBox")
     button:SetType("radio")
     button:SetLabel(text)
@@ -25,13 +25,6 @@ local function BuildRadio(parent, text, offsetY, otherRadio, callback)
     button:SetPoint("TOPLEFT", parent.content, "TOP", 0, offsetY)
 
     button:SetCallback("OnValueChanged", function(self)
-        local other = parent[otherRadio]
-        if (self:GetValue() and other:GetValue()) then
-            other:SetValue(false)
-        elseif not self:GetValue() and not other:GetValue() then
-            self:SetValue(true)
-        end
-
         callback(self:GetValue())
     end)
 
@@ -75,6 +68,75 @@ local function BuildSlider(parent, text, offsetY)
     return slider
 end
 
+local function BuildModuleOptions(frame, yOffset)
+    local L = ADDON.L
+
+    local positionOptions = { "TOP", "LEFT", "RIGHT", "BOTTOM" }
+    if LE_EXPANSION_LEVEL_CURRENT >= LE_EXPANSION_DRAGONFLIGHT then
+        positionOptions[#positionOptions+1] = "NONE"
+    end
+
+    local elements = {}
+    elements.positionDropDown = AceGUI:Create("Dropdown")
+    elements.positionDropDown:SetList({
+        NONE = L.SETTING_POSITION_NONE,
+        TOP = L.SETTING_POSITION_TOP,
+        LEFT = L.SETTING_POSITION_LEFT,
+        RIGHT = L.SETTING_POSITION_RIGHT,
+        BOTTOM = L.SETTING_POSITION_BOTTOM,
+    }, positionOptions, "Dropdown-Item-Toggle")
+    frame:AddChild(elements.positionDropDown)
+    elements.positionDropDown:SetWidth(100)
+    elements.positionDropDown:SetPoint("TOPLEFT", frame.content, "TOP", 0, yOffset)
+    elements.positionDropDown:SetCallback("OnValueChanged", function(self)
+        local disabled = self:GetValue() == "NONE"
+        elements.columnSlider:SetDisabled(disabled)
+        elements.rowSlider:SetDisabled(disabled)
+        elements.scaleRadioAuto:SetDisabled(disabled)
+        elements.scaleRadioManual:SetDisabled(disabled)
+        elements.scaleEditManual:SetDisabled(disabled)
+    end)
+    BuildLabel(frame, L.SETTING_POSITION_LABEL_GENERIC, elements.positionDropDown)
+    yOffset = yOffset - 30
+
+    elements.columnSlider = BuildSlider(frame, L.SETTING_COLUMN_COUNT_LABEL, yOffset)
+    yOffset = yOffset - 40
+
+    elements.rowSlider = BuildSlider(frame, L.SETTING_ROW_COUNT_LABEL, yOffset)
+    yOffset = yOffset - 60
+
+    elements.scaleRadioAuto = BuildRadio(frame, L.SETTING_SCALE_AUTO, yOffset, function(value)
+        if (value) then
+            elements.scaleEditManual:SetDisabled(true)
+        else
+            elements.scaleEditManual:SetDisabled(false)
+        end
+        elements.scaleRadioManual:SetValue(not value)
+    end)
+    yOffset = yOffset - 20
+    elements.scaleRadioManual = BuildRadio(frame, L.SETTING_SCALE_MANUAL, yOffset, function(value)
+        if (value) then
+            elements.scaleEditManual:SetDisabled(false)
+        else
+            elements.scaleEditManual:SetDisabled(true)
+        end
+        elements.scaleRadioAuto:SetValue(not value)
+    end)
+    BuildLabel(frame, L.SETTING_SCALE_LABEL, elements.scaleRadioAuto)
+
+    elements.scaleEditManual = AceGUI:Create("EditBox")
+    elements.scaleEditManual:DisableButton(true)
+    elements.scaleEditManual:SetWidth(80)
+    elements.scaleEditManual.editbox:SetNumber(1.0)
+    elements.scaleEditManual.editbox:SetJustifyH("CENTER")
+    frame:AddChild(elements.scaleEditManual)
+    elements.scaleEditManual:SetPoint("LEFT", elements.scaleRadioManual.frame, "RIGHT")
+    elements.scaleEditManual:SetDisabled(true)
+    yOffset = yOffset - 20
+
+    return elements, yOffset
+end
+
 local function BuildFrame()
     local title = GetAddOnMetadata(ADDON_NAME, "Title")
     local frame = AceGUI:Create("BlizOptionsGroup")
@@ -86,96 +148,74 @@ local function BuildFrame()
     local yOffset
 
     yOffset = -10
-    BuildHeader(frame, L.SETTING_HEAD_DISPLAY, yOffset)
-
+    BuildHeader(frame, L.SETTING_HEAD_MAILBOX, yOffset)
     yOffset = yOffset - 20
-    frame.positionDropDown = AceGUI:Create("Dropdown")
-    frame.positionDropDown:SetList({
-        TOP = L.SETTING_POSITION_TOP,
-        LEFT = L.SETTING_POSITION_LEFT,
-        RIGHT = L.SETTING_POSITION_RIGHT,
-        BOTTOM = L.SETTING_POSITION_BOTTOM,
-    }, { "TOP", "LEFT", "RIGHT", "BOTTOM" }, "Dropdown-Item-Toggle")
-    frame:AddChild(frame.positionDropDown)
-    frame.positionDropDown:SetWidth(100)
-    frame.positionDropDown:SetPoint("TOPLEFT", frame.content, "TOP", 0, yOffset)
-    BuildLabel(frame, L.SETTING_POSITION_LABEL, frame.positionDropDown)
 
-    yOffset = yOffset - 30
-    frame.columnSlider = BuildSlider(frame, L.SETTING_COLUMN_COUNT_LABEL, yOffset)
+    frame.mail, yOffset = BuildModuleOptions(frame, yOffset)
+
+    frame.mail.clickCheck = BuildCheckBox(frame, L.SETTING_CLICKTOSEND_LABEL, yOffset)
+    yOffset = yOffset - 20
+
+    frame.mail.autoSwitchCheck = BuildCheckBox(frame, L.SETTING_SWITCHTAB_LABEL, yOffset)
     yOffset = yOffset - 40
-    frame.rowSlider = BuildSlider(frame, L.SETTING_ROW_COUNT_LABEL, yOffset)
 
-    yOffset = yOffset - 60
-    frame.scaleRadioAuto = BuildRadio(frame, L.SETTING_SCALE_AUTO, yOffset, "scaleRadioManual", function(value)
-        if (value) then
-            frame.scaleEditManual:SetDisabled(true)
-        else
-            frame.scaleEditManual:SetDisabled(false)
-        end
-    end)
-    yOffset = yOffset - 20
-    frame.scaleRadioManual = BuildRadio(frame, L.SETTING_SCALE_MANUAL, yOffset, "scaleRadioAuto", function(value)
-        if (value) then
-            frame.scaleEditManual:SetDisabled(false)
-        else
-            frame.scaleEditManual:SetDisabled(true)
-        end
-    end)
-    BuildLabel(frame, L.SETTING_SCALE_LABEL, frame.scaleRadioAuto)
-
-    frame.scaleEditManual = AceGUI:Create("EditBox")
-    frame.scaleEditManual:DisableButton(true)
-    frame.scaleEditManual:SetWidth(80)
-    frame.scaleEditManual.editbox:SetNumber(1.0)
-    frame.scaleEditManual.editbox:SetJustifyH("CENTER")
-    frame:AddChild(frame.scaleEditManual)
-    frame.scaleEditManual:SetPoint("LEFT", frame.scaleRadioManual.frame, "RIGHT")
-    frame.scaleEditManual:SetDisabled(true)
-
-    yOffset = yOffset - 40
-    BuildHeader(frame, L.SETTING_HEAD_INTERACTION, yOffset)
-
-    yOffset = yOffset - 20
-    frame.clickCheck = BuildCheckBox(frame, L.SETTING_CLICKTOSEND_LABEL, yOffset)
-
-    yOffset = yOffset - 20
-    frame.autoSwitchCheck = BuildCheckBox(frame, L.SETTING_SWITCHTAB_LABEL, yOffset)
+    if LE_EXPANSION_LEVEL_CURRENT >= LE_EXPANSION_DRAGONFLIGHT then
+        BuildHeader(frame, PLACE_CRAFTING_ORDERS, yOffset)
+        yOffset = yOffset - 20
+        frame.craftOrder, yOffset = BuildModuleOptions(frame, yOffset)
+    end
 
     return frame
 end
 
-local function RefreshHandler(frame)
-    frame.positionDropDown:SetValue(ADDON.settings.position)
+local function RefreshModuleOptions(elements, settings)
+    elements.positionDropDown:SetValue(settings.position)
+    elements.positionDropDown:Fire("OnValueChanged", settings.position)
 
-    frame.columnSlider:SetValue(ADDON.settings.columnCount)
-    frame.rowSlider:SetValue(ADDON.settings.rowCount)
+    elements.columnSlider:SetValue(settings.columnCount)
+    elements.rowSlider:SetValue(settings.rowCount)
 
-    local scale = ADDON.settings.scale
+    local scale = settings.scale
     if scale == "AUTO" then
-        frame.scaleRadioAuto:SetValue(true)
+        elements.scaleRadioAuto:SetValue(true)
+        elements.scaleRadioAuto:Fire("OnValueChanged", true)
     else
-        frame.scaleRadioManual:SetValue(true)
-        frame.scaleEditManual.editbox:SetNumber(scale)
-        frame.scaleEditManual.editbox:SetCursorPosition(0)
+        elements.scaleRadioManual:SetValue(true)
+        elements.scaleRadioManual:Fire("OnValueChanged", true)
+        elements.scaleEditManual.editbox:SetNumber(scale)
+        elements.scaleEditManual.editbox:SetCursorPosition(0)
     end
+end
+local function RefreshHandler(frame)
+    RefreshModuleOptions(frame.mail, ADDON.settings)
 
-    frame.clickCheck:SetValue(ADDON.settings.clickToSend)
-    frame.autoSwitchCheck:SetValue(ADDON.settings.switchTabOnEmptyInbox)
+    frame.mail.clickCheck:SetValue(ADDON.settings.clickToSend)
+    frame.mail.autoSwitchCheck:SetValue(ADDON.settings.switchTabOnEmptyInbox)
+
+    if LE_EXPANSION_LEVEL_CURRENT >= LE_EXPANSION_DRAGONFLIGHT then
+        RefreshModuleOptions(frame.craftOrder, ADDON.settings.craftOrder)
+    end
 end
 
-local function OKHandler(frame)
-    ADDON:SetPosition('mail', frame.positionDropDown:GetValue())
-    ADDON:SetSize('mail', frame.columnSlider:GetValue(), frame.rowSlider:GetValue())
+local function SaveModuleOptions(moduleName, elements)
+    ADDON:SetPosition(moduleName, elements.positionDropDown:GetValue())
+    ADDON:SetSize(moduleName, elements.columnSlider:GetValue(), elements.rowSlider:GetValue())
 
-    if frame.scaleRadioAuto:GetValue() then
-        ADDON:SetScale('mail', "AUTO")
+    if elements.scaleRadioAuto:GetValue() then
+        ADDON:SetScale(moduleName, "AUTO")
     else
-        ADDON:SetScale('mail', frame.scaleEditManual.editbox:GetNumber())
+        ADDON:SetScale(moduleName, elements.scaleEditManual.editbox:GetNumber())
     end
+end
+local function OKHandler(frame)
+    SaveModuleOptions('mail', frame.mail)
 
-    ADDON.settings.clickToSend = frame.clickCheck:GetValue()
-    ADDON.settings.switchTabOnEmptyInbox = frame.autoSwitchCheck:GetValue()
+    ADDON.settings.clickToSend = frame.mail.clickCheck:GetValue()
+    ADDON.settings.switchTabOnEmptyInbox = frame.mail.autoSwitchCheck:GetValue()
+
+    if LE_EXPANSION_LEVEL_CURRENT >= LE_EXPANSION_DRAGONFLIGHT then
+        SaveModuleOptions('craftOrder', frame.craftOrder)
+    end
 end
 
 local categoryID
