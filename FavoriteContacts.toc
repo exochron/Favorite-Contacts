@@ -25,6 +25,7 @@ UI\EditPopup.lua
 UI\DragCursor.lua
 UI\MailModule.lua
 SlashCommand.lua
+AddonCompartment.lua
 SettingsPanel.lua
 ThirdPartySupport.lua
 #@do-not-package@
