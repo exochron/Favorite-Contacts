@@ -4,6 +4,19 @@ local MODULE_NAME = 'mail'
 
 local container
 
+local function UpdateContainer()
+    ADDON:UpdateContactContainer(container, ADDON.settings)
+    ADDON:UpdateContactButtons(container)
+
+    if ADDON.settings.position == "RIGHT" then
+        local width = container.frame:GetWidth() * container.frame:GetScale()
+        OpenMailFrame:SetPoint("TOPLEFT", InboxFrame, "TOPRIGHT", width + ADDON.CONTACT_BUTTON_MARGIN, 0)
+    else
+        OpenMailFrame:SetPoint("TOPLEFT", InboxFrame, "TOPRIGHT", 0, 0)
+    end
+    UpdateUIPanelPositions(OpenMailFrame)
+end
+
 local function SendMail()
     if SendMailMailButton:IsVisible() and SendMailMailButton:IsEnabled() then
         SendMailMailButton:Click()
@@ -38,8 +51,7 @@ ADDON.Events:RegisterCallback('Login', function()
                 end
             end
 
-            ADDON:UpdateContactContainer(container, ADDON.settings)
-            ADDON:UpdateContactButtons(container)
+            UpdateContainer()
 
             MailFrame:HookScript("OnHide", function()
                 container.frame:Hide()
@@ -59,8 +71,7 @@ ADDON.Events:RegisterCallback("ContactUpdated", function(_, module, index)
 end, MODULE_NAME)
 ADDON.Events:RegisterCallback("ContainerUpdated", function(_, module)
     if container and module == MODULE_NAME then
-        ADDON:UpdateContactContainer(container, ADDON.settings)
-        ADDON:UpdateContactButtons(container)
+        UpdateContainer()
     end
 end, MODULE_NAME)
 ADDON.Events:RegisterCallback("ContainerEnabled", function(_, enabled)
