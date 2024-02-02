@@ -44,6 +44,8 @@ ADDON.Events:RegisterCallback('Login', function()
             MailFrame:HookScript("OnHide", function()
                 container.frame:Hide()
             end)
+
+            ADDON.MailContainer = container -- only for screenshots
         end
 
         container.frame:Show()

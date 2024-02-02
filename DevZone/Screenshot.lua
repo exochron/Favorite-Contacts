@@ -33,19 +33,19 @@ function ADDON:TakeScreenshots()
                     api:BackScreen()
                     MailFrameTab2:Click() -- switch to send mail
                     -- create new entry menu
-                    api:Point(ADDON.contactButtons[10].frame)
-                    api:Click(ADDON.contactButtons[10].frame, "RightButton")
+                    api:Point(ADDON.MailContainer.contactButtons[10].frame)
+                    api:Click(ADDON.MailContainer.contactButtons[10].frame, "RightButton")
                 end,
                 function(api)
                     -- edit menu existing (Ptr: Powaa)
                     api:BackScreen()
-                    api:Click(ADDON.contactButtons[9].frame, "RightButton")
+                    api:Click(ADDON.MailContainer.contactButtons[9].frame, "RightButton")
                     api:Point(DropDownList1Button1)
                 end,
                 function(api)
                     api:BackScreen()
                     -- edit existing (Ptr: Powaa)
-                    api:Click(ADDON.contactButtons[9].frame, "RightButton")
+                    api:Click(ADDON.MailContainer.contactButtons[9].frame, "RightButton")
                     api:Click(DropDownList1Button1)
                 end,
                 function(api)
