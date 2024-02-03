@@ -2,7 +2,7 @@ local _, ADDON = ...
 
 local MODULE_NAME = 'mail'
 
-local container
+local container, OnNextInfoUpdate
 
 local function UpdateContainer()
     ADDON:UpdateContactContainer(container, ADDON.settings)
@@ -17,14 +17,34 @@ local function UpdateContainer()
     UpdateUIPanelPositions(OpenMailFrame)
 end
 
-local function SendMail()
-    if SendMailMailButton:IsVisible() and SendMailMailButton:IsEnabled() then
+local function ClickToSend()
+    if ADDON.settings.clickToSend and SendMailMailButton:IsVisible() and SendMailMailButton:IsEnabled() then
         SendMailMailButton:Click()
+    end
+end
+
+local function ContactHandler(_, contact)
+    MailFrameTab_OnClick(nil, 2)
+    SendMailNameEditBox:SetText(contact.recipient)
+    SendMailSubjectEditBox:SetFocus()
+
+    if CursorHasItem() then
+        OnNextInfoUpdate = ClickToSend
+        SendMailAttachmentButton_OnDropAny() -- triggers event: MAIL_SEND_INFO_UPDATE
+    else
+        ClickToSend()
     end
 end
 
 ADDON.Events:RegisterCallback('Login', function()
     ADDON:RegisterModule(MODULE_NAME, ADDON.settings)
+
+    MailFrame:HookScript("OnEvent", function(_, event)
+        if event == "MAIL_SEND_INFO_UPDATE" and OnNextInfoUpdate then
+            OnNextInfoUpdate()
+            OnNextInfoUpdate = nil
+        end
+    end)
 
     MailFrame:HookScript("OnShow", function()
         if ADDON.settings.position == "NONE" then
@@ -38,18 +58,7 @@ ADDON.Events:RegisterCallback('Login', function()
             container = ADDON:CreateContactContainer(max(InboxFrame:GetFrameLevel(), SendMailFrame:GetFrameLevel()))
             container.Module = MODULE_NAME
             container.AttachFrame = MailFrame
-            container.ContactHandler = function(_, contact)
-                MailFrameTab_OnClick(nil, 2)
-                SendMailNameEditBox:SetText(contact.recipient)
-                SendMailSubjectEditBox:SetFocus()
-
-                if CursorHasItem() then
-                    SendMailAttachmentButton_OnDropAny()
-                end
-                if ADDON.settings.clickToSend then
-                    SendMail()
-                end
-            end
+            container.ContactHandler = ContactHandler
 
             UpdateContainer()
 
