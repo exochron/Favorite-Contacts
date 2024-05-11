@@ -26,6 +26,10 @@ end
 local function ContactHandler(_, contact)
     MailFrameTab_OnClick(nil, 2)
     SendMailNameEditBox:SetText(contact.recipient)
+    local handler = SendMailNameEditBox:GetScript("OnTextChanged")
+    if handler then
+        handler(SendMailNameEditBox, contact.recipient)
+    end
     SendMailSubjectEditBox:SetFocus()
 
     if CursorHasItem() then
