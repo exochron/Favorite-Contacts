@@ -10,6 +10,85 @@ local clickTime = 0
 
 local AceGUI = LibStub("AceGUI-3.0")
 
+local function InitButtonDDMenu(_, level)
+    local info
+    local container = contextMenuContainer
+    if not container then
+        return
+    end
+
+    local contact = ADDON:GetContact(container.Module, contextMenuIndex)
+    if contact then
+        info = {
+            notCheckable = true,
+            text = EDIT,
+            func = function()
+                ADDON:ShowEditContactPopup(contextMenuIndex, container)
+            end,
+        }
+        UIDropDownMenu_AddButton(info, level)
+
+        info = {
+            notCheckable = true,
+            text = DELETE,
+            func = function()
+                ADDON:DeleteContact(container.Module, contextMenuIndex)
+            end,
+        }
+        UIDropDownMenu_AddButton(info, level)
+    else
+        info = {
+            notCheckable = true,
+            text = ADDON.L["Create"],
+            func = function()
+                ADDON:ShowEditContactPopup(contextMenuIndex, container)
+            end,
+        }
+        UIDropDownMenu_AddButton(info, level)
+    end
+
+    info = {
+        notCheckable = true,
+        text = CANCEL,
+        func = mil,
+    }
+    UIDropDownMenu_AddButton(info, level)
+end
+
+local function CreateContextMenu(owner, rootDescription, contextIndex, container)
+    local contact = ADDON:GetContact(container.Module, contextIndex)
+
+    if contact then
+        rootDescription:CreateButton(EDIT, function()
+            ADDON:ShowEditContactPopup(contextIndex, container)
+        end);
+        rootDescription:CreateButton(DELETE, function()
+            ADDON:DeleteContact(container.Module, contextIndex)
+        end);
+    else
+        rootDescription:CreateButton(ADDON.L["Create"], function()
+            ADDON:ShowEditContactPopup(contextIndex, container)
+        end);
+    end
+
+    rootDescription:CreateButton(CANCEL, function()  end);
+end
+
+local function handleContextMenu(button, container)
+    if MenuUtil then
+        MenuUtil.CreateContextMenu(button, CreateContextMenu, button.index, container)
+    else
+        if contextMenu == nil then
+            contextMenu = CreateFrame("Frame", ADDON_NAME .. "ContactButtonContextMenu", nil, "UIDropDownMenuTemplate")
+            UIDropDownMenu_Initialize(contextMenu, InitButtonDDMenu, "MENU")
+        end
+
+        contextMenuIndex = button.index
+        contextMenuContainer = container
+        ToggleDropDownMenu(1, nil, contextMenu, button.frame, 0, 0)
+    end
+end
+
 local function OnContactButtonClicked(button, _, buttonType)
     if currentDragContact ~= 0 then
         ADDON:StopDrag(button.index)
@@ -35,9 +114,7 @@ local function OnContactButtonClicked(button, _, buttonType)
     end
 
     if buttonType == "RightButton" then
-        contextMenuIndex = button.index
-        contextMenuContainer = container
-        ToggleDropDownMenu(1, nil, contextMenu, button.frame, 0, 0)
+        handleContextMenu(button, container)
         return
     end
 end
@@ -154,53 +231,3 @@ function ADDON:UpdateContactButtons(container)
         self:UpdateContactButton(index, container)
     end
 end
-
-local function InitButtonMenu(_, level)
-    local info
-    local container = contextMenuContainer
-    if not container then
-        return
-    end
-
-    local contact = ADDON:GetContact(container.Module, contextMenuIndex)
-    if contact then
-        info = {
-            notCheckable = true,
-            text = EDIT,
-            func = function()
-                ADDON:ShowEditContactPopup(contextMenuIndex, container)
-            end,
-        }
-        UIDropDownMenu_AddButton(info, level)
-
-        info = {
-            notCheckable = true,
-            text = DELETE,
-            func = function()
-                ADDON:DeleteContact(container.Module, contextMenuIndex)
-            end,
-        }
-        UIDropDownMenu_AddButton(info, level)
-    else
-        info = {
-            notCheckable = true,
-            text = ADDON.L["Create"],
-            func = function()
-                ADDON:ShowEditContactPopup(contextMenuIndex, container)
-            end,
-        }
-        UIDropDownMenu_AddButton(info, level)
-    end
-
-    info = {
-        notCheckable = true,
-        text = CANCEL,
-        func = mil,
-    }
-    UIDropDownMenu_AddButton(info, level)
-end
-
-ADDON.Events:RegisterCallback('LoadUI', function()
-    contextMenu = CreateFrame("Frame", ADDON_NAME .. "ContactButtonContextMenu", nil, "UIDropDownMenuTemplate")
-    UIDropDownMenu_Initialize(contextMenu, InitButtonMenu, "MENU")
-end, 'contact-button')
