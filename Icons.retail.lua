@@ -43,6 +43,7 @@ ADDON.iconFiles = {
     "raceicon-pandaren-female", "raceicon-pandaren-male",
     "raceicon-dracthyr-female", "raceicon-dracthyr-male",
     "raceicon-dracthyrvisage-female", "raceicon-dracthyrvisage-male",
+    "raceicon-earthen-female", "raceicon-earthen-male",
     "raceicon-orc-female", "raceicon-orc-male",
     "raceicon-tauren-female", "raceicon-tauren-male",
     "raceicon-troll-female", "raceicon-troll-male",
