@@ -138,7 +138,7 @@ local function BuildModuleOptions(frame, yOffset)
 end
 
 local function BuildFrame()
-    local title = GetAddOnMetadata(ADDON_NAME, "Title")
+    local title = C_AddOns.GetAddOnMetadata(ADDON_NAME, "Title")
     local frame = AceGUI:Create("BlizOptionsGroup")
     frame:SetName(title)
     frame:SetTitle(title)
@@ -225,24 +225,11 @@ ADDON.Events:RegisterCallback('Login', function()
     group:SetCallback("okay", OKHandler)
     group:SetCallback("default", ADDON.ResetUISettings)
 
-    if Settings and Settings.RegisterCanvasLayoutCategory then
-        -- retail >= 10.0
-        local category = Settings.RegisterCanvasLayoutCategory(group.frame, GetAddOnMetadata(ADDON_NAME, "Title"))
-        Settings.RegisterAddOnCategory(category)
-        categoryID = category.ID
-    else
-        -- classics
-        InterfaceOptions_AddCategory(group.frame)
-    end
+    local category = Settings.RegisterCanvasLayoutCategory(group.frame, C_AddOns.GetAddOnMetadata(ADDON_NAME, "Title"))
+    Settings.RegisterAddOnCategory(category)
+    categoryID = category.ID
 end, 'settings-panel')
 
 function ADDON:OpenSettings()
-    if categoryID and Settings and Settings.OpenToCategory then
-        Settings.OpenToCategory(categoryID)
-    else
-        -- open double to prevent stupid interface bug
-        local title = GetAddOnMetadata(ADDON_NAME, "Title")
-        InterfaceOptionsFrame_OpenToCategory(title)
-        InterfaceOptionsFrame_OpenToCategory(title)
-    end
+    Settings.OpenToCategory(categoryID)
 end
