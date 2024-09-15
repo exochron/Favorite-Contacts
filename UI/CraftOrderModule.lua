@@ -18,7 +18,7 @@ local function showContainer()
         container.AttachFrame = ProfessionsCustomerOrdersFrame
         container.ContactHandler = function(_, contact)
             ProfessionsCustomerOrdersFrame.Form:SetOrderRecipient(Enum.CraftingOrderType.Personal)
-            ProfessionsCustomerOrdersFrame.Form.OrderRecipientDropDown.Text:SetText(PROFESSIONS_CRAFTING_FORM_ORDER_RECIPIENT_PRIVATE)
+            ProfessionsCustomerOrdersFrame.Form.OrderRecipientDropdown:Update()
             ProfessionsCustomerOrdersFrame.Form.OrderRecipientTarget:SetText(contact.recipient)
         end
 
