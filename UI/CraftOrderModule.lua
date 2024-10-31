@@ -1,5 +1,9 @@
 local ADDON_NAME, ADDON = ...
 
+if LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_DRAGONFLIGHT then
+    return
+end
+
 local MODULE_NAME = 'craftOrder'
 
 local container
