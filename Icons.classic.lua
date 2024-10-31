@@ -1,5 +1,9 @@
 local _, ADDON = ...
 
+if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then
+    return
+end
+
 -- see https://github.com/tomrus88/BlizzardInterfaceCode/blob/classic/Interface/GlueXML/CharacterCreate.lua
 -- for new race and class icons
 

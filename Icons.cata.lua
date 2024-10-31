@@ -1,5 +1,10 @@
 local _, ADDON = ...
 
+-- see: https://warcraft.wiki.gg/wiki/WOW_PROJECT_ID
+if nil == WOW_PROJECT_CATACLYSM_CLASSIC or WOW_PROJECT_ID ~= WOW_PROJECT_CATACLYSM_CLASSIC then
+    return
+end
+
 ADDON.iconFiles = {
     "INV_Misc_GroupLooking",
 
