@@ -27,16 +27,9 @@ ADDON.iconFiles = {
     "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Races,0.75,1.0,0.25,0.5", --ORC_MALE
     "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Races,0.75,1.0,0.75,1.0", --ORC_FEMALE
 
-    -- class - uses plain textures with coordinates
-    "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes,0,0.25,0,0.25", --WARRIOR
-    "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes,0.25,0.49609375,0,0.25", --MAGE
-    "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes,0.49609375,0.7421875,0,0.25", --ROGUE
-    "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes,0.7421875,0.98828125,0,0.25", --DRUID
-    "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes,0,0.25,0.25,0.5", --HUNTER
-    "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes,0.25,0.49609375,0.25,0.5", --SHAMAN
-    "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes,0.49609375,0.7421875,0.25,0.5", --PRIEST
-    "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes,0.7421875,0.98828125,0.25,0.5", --WARLOCK
-    "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes,0,0.25,0.5,0.75", --PALADIN
+    -- class
+    "ClassIcon_Druid", "ClassIcon_Hunter", "ClassIcon_Mage", "ClassIcon_Paladin", "ClassIcon_Priest",
+    "ClassIcon_Rogue", "ClassIcon_Shaman", "ClassIcon_Warlock", "ClassIcon_Warrior",
 
     --specialisations
     "Spell_Nature_StarFall","Ability_druid_catform","Ability_racial_bearform","Spell_nature_healingtouch",
