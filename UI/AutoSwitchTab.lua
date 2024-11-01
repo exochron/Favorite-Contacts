@@ -2,7 +2,7 @@ local _, ADDON = ...
 
 local checkWithNextUpdate = false
 
-MailFrame:HookScript("OnShow", function()
+local function ShowHandler()
     if ADDON.settings.switchTabOnEmptyInbox then
         C_Timer.After(0.01, function()
             if MailFrame.inboxBeingChecked then
@@ -15,14 +15,22 @@ MailFrame:HookScript("OnShow", function()
             end
         end)
     end
-end)
-MailFrame:HookScript("OnEvent", function(self, event)
-    if ADDON.settings.switchTabOnEmptyInbox then
-        if event == "MAIL_INBOX_UPDATE" then
-            if checkWithNextUpdate and GetInboxNumItems() == 0 then
-                MailFrameTab2:Click()
-            end
-            checkWithNextUpdate = false
-        end
+end
+
+ADDON.Events:RegisterCallback('LoadUI', function()
+    if MailFrame:IsShown() then
+        ShowHandler()
     end
-end)
+
+    MailFrame:HookScript("OnShow", ShowHandler)
+    MailFrame:HookScript("OnEvent", function(_, event)
+        if ADDON.settings.switchTabOnEmptyInbox then
+            if event == "MAIL_INBOX_UPDATE" then
+                if checkWithNextUpdate and GetInboxNumItems() == 0 then
+                    MailFrameTab2:Click()
+                end
+                checkWithNextUpdate = false
+            end
+        end
+    end)
+end, 'auto-switch')
