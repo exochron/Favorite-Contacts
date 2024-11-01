@@ -11,14 +11,9 @@ externals:
         tag: latest
         curse-slug: ace3
 
-    Libs/TaintLess:
-        url: https://www.townlong-yak.com/addons.git/taintless
-        commit: default
-
 ignore:
     - LICENSE
-    - README.md
-    - CHANGELOG.md
+    - **/*.md
     - DevZone
     - Images
     - Libs/*/LICENSE
