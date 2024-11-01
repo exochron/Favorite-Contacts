@@ -18,8 +18,12 @@ local function UpdateContainer()
 end
 
 local function ClickToSend()
-    if ADDON.settings.clickToSend and SendMailMailButton:IsVisible() and SendMailMailButton:IsEnabled() then
-        SendMailMailButton:Click()
+    if ADDON.settings.clickToSend then
+        C_Timer.After(0, function() -- some UIs might delay a bit
+            if SendMailMailButton:IsVisible() and SendMailMailButton:IsEnabled() then
+                SendMailMailButton:Click()
+            end
+        end)
     end
 end
 
