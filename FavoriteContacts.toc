@@ -18,6 +18,7 @@ Icons.retail.lua
 Icons.classic.lua
 Icons.cata.lua
 UI\AceGUIWidget-FC_CheckedButton.lua
+UI\AceGUIWidget-FC_ContactButton.lua
 UI\Functions.lua
 UI\AutoSwitchTab.lua
 UI\ContactContainer.lua

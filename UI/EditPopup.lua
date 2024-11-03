@@ -1,4 +1,4 @@
-local _, ADDON = ...
+local ADDON_NAME, ADDON = ...
 
 local CONTACT_DEFAULT_ICON = "INV_Misc_GroupLooking"
 
@@ -62,6 +62,9 @@ local function UpdateForm(container, iconText)
 end
 
 local function CreateIconButtons(AceGUI, container)
+    local Masque = LibStub("Masque", true)
+    local MQG = Masque and Masque:Group(ADDON_NAME, "Edit Window") or nil
+
     for _, icon in pairs(ADDON.iconFiles) do
         local button = AceGUI:Create("FC_CheckedButton")
         ADDON:SetTexture(button.image, icon)
@@ -72,6 +75,9 @@ local function CreateIconButtons(AceGUI, container)
             UpdateForm(container, icon)
         end)
 
+        if MQG then
+            MQG:AddButton(button.frame)
+        end
         container:AddChild(button)
     end
 end
