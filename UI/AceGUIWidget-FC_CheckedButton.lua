@@ -1,22 +1,13 @@
---[[-----------------------------------------------------------------------------
-Icon Widget
--------------------------------------------------------------------------------]]
 local Type, Version = "FC_CheckedButton", 1
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
---[[-----------------------------------------------------------------------------
-Scripts
--------------------------------------------------------------------------------]]
 
 local function Button_OnClick(frame, button)
 	frame.obj:Fire("OnClick", button)
 	AceGUI:ClearFocus()
 end
 
---[[-----------------------------------------------------------------------------
-Methods
--------------------------------------------------------------------------------]]
 local methods = {
 	["OnAcquire"] = function(self)
 		self:SetHeight(42)
@@ -42,28 +33,19 @@ local methods = {
 	end,
 }
 
---[[-----------------------------------------------------------------------------
-Constructor
--------------------------------------------------------------------------------]]
 local function Constructor()
-	local frame = CreateFrame("CheckButton", nil, UIParent, "SimplePopupButtonTemplate")
-	frame:Hide()
+	local frame = CreateFrame("CheckButton", nil, UIParent, "ActionButtonTemplate")
 
 	frame:EnableMouse(true)
 	frame:SetScript("OnClick", Button_OnClick)
 
-	local image = frame:CreateTexture(nil, "ARTWORK")
-	image:SetWidth(42)
-	image:SetHeight(42)
-	image:SetPoint("TOP", 0, 0)
-
-	frame:SetNormalTexture(image)
-	frame:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square")
-	frame:SetCheckedTexture("Interface\\Buttons\\CheckButtonHilight")
-	frame:GetCheckedTexture():SetBlendMode("ADD")
+	-- ElvUI hack
+	if frame.StyleButton then
+		frame:StyleButton()
+	end
 
 	local widget = {
-		image = image,
+		image = frame.icon,
 		frame = frame,
 		type  = Type
 	}

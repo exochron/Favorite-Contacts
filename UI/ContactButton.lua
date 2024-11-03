@@ -1,4 +1,4 @@
-local _, ADDON = ...
+local ADDON_NAME, ADDON = ...
 
 local CONTACT_DEFAULT_ICON = "INV_Misc_GroupLooking"
 
@@ -67,16 +67,11 @@ local function CreateContactButton(index, container)
         return button
     end
 
-    button = AceGUI:Create("Icon")
-    container:AddChild(button)
+    button = AceGUI:Create("FC_ContactButton")
 
-    button:SetImageSize(ADDON.CONTACT_BUTTON_SIZE, ADDON.CONTACT_BUTTON_SIZE)
     button:SetHeight(ADDON.CONTACT_BUTTON_SIZE)
-    button:SetWidth(ADDON.CONTACT_BUTTON_SIZE + ADDON.CONTACT_BUTTON_MARGIN)
+    button:SetWidth(ADDON.CONTACT_BUTTON_SIZE)
 
-    button.image:SetPoint("TOP", 0, 0)
-
-    button.frame:RegisterForClicks("AnyUp")
     button:SetCallback("OnClick", OnContactButtonClicked)
     button:SetCallback("OnEnter", function(widget)
         if (not widget.index) then
@@ -97,17 +92,6 @@ local function CreateContactButton(index, container)
     end)
     button:SetCallback("OnLeave", function()
         GameTooltip:Hide()
-    end)
-
-    button.frame:RegisterForDrag("LeftButton", "RightButton")
-    button.frame:SetScript("OnDragStart", function(frame)
-        frame.obj:Fire("OnDragStart")
-    end)
-    button.frame:SetScript("OnDragStop", function(frame)
-        frame.obj:Fire("OnDragStop")
-    end)
-    button.frame:SetScript("OnReceiveDrag", function(frame)
-        frame.obj:Fire("OnReceiveDrag")
     end)
 
     button:SetCallback("OnDragStart", function(widget)
@@ -139,7 +123,14 @@ local function CreateContactButton(index, container)
 
     button.index = index
 
+    local Masque = LibStub("Masque", true)
+    local MQG = Masque and Masque:Group(ADDON_NAME, container.Module, container.Module) or nil
+    if MQG then
+        MQG:AddButton(button.frame)
+    end
+
     container.contactButtons[index] = button
+    container:AddChild(button)
 
     return button
 end
@@ -162,7 +153,12 @@ function ADDON:UpdateContactButton(index, container)
         ADDON:SetTexture(button.image, icon)
     else
         button.image:SetAtlas("")
-        button:SetImage("Interface\\Buttons\\UI-EmptySlot-Disabled", 0.140625, 0.84375, 0.140625, 0.84375)
+        if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+            button:SetImage(4701874) -- interface/containerframe/bagsitemslot2x
+        else
+            -- classics
+            button:SetImage("Interface\\Buttons\\UI-EmptySlot-Disabled", 0.140625, 0.84375, 0.140625, 0.84375)
+        end
     end
 end
 

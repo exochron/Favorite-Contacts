@@ -6,7 +6,7 @@ ADDON.CONTACT_BUTTON_MARGIN = 3
 function ADDON:CreateContactContainer(frameLevel)
     local AceGUI = LibStub("AceGUI-3.0")
     local container = AceGUI:Create("SimpleGroup")
-    container:SetLayout("Flow")
+    container:SetLayout("Table")
     container.frame:SetToplevel(true)
     container.frame:SetFrameStrata("HIGH")
     container.frame:SetFrameLevel(frameLevel)
@@ -27,16 +27,25 @@ function ADDON:UpdateContactContainer(container, settings)
     local position = settings.position
     local referenceFrame = container.AttachFrame
 
-    local width = ((ADDON.CONTACT_BUTTON_SIZE + ADDON.CONTACT_BUTTON_MARGIN) * settings.columnCount)+1
-    local height = ((ADDON.CONTACT_BUTTON_SIZE + ADDON.CONTACT_BUTTON_MARGIN) * settings.rowCount)+1
-    container:SetWidth(width)
+    local width = ((ADDON.CONTACT_BUTTON_SIZE + ADDON.CONTACT_BUTTON_MARGIN) * settings.columnCount)
+    local height = ((ADDON.CONTACT_BUTTON_SIZE + ADDON.CONTACT_BUTTON_MARGIN) * settings.rowCount)
+
+    local columns = {}
+    for i = 1, settings.columnCount do
+        table.insert(columns, {})
+    end
+    container:SetUserData("table", {
+        columns = columns,
+        space = ADDON.CONTACT_BUTTON_MARGIN,
+    })
     container:SetHeight(height)
+    container:SetWidth(width)
 
     if scale == "AUTO" then
         if position == "TOP" or position == "BOTTOM" then
-            scale = referenceFrame:GetScale() * referenceFrame:GetWidth() / width
+            scale = referenceFrame:GetScale() * referenceFrame:GetWidth() / (width-ADDON.CONTACT_BUTTON_MARGIN)
         else
-            scale = referenceFrame:GetScale() * (referenceFrame:GetHeight()+5) / height
+            scale = referenceFrame:GetScale() * referenceFrame:GetHeight() / (height-ADDON.CONTACT_BUTTON_MARGIN)
         end
     end
     container.frame:SetScale(scale)
@@ -45,8 +54,8 @@ function ADDON:UpdateContactContainer(container, settings)
     container:ClearAllPoints()
 
     if position == "LEFT" then
-        xOffset = width * scale + ADDON.CONTACT_BUTTON_MARGIN
-        container:SetPoint("TOPRIGHT", referenceFrame, "TOPLEFT", -ADDON.CONTACT_BUTTON_MARGIN, 2)
+        xOffset = width * scale
+        container:SetPoint("TOPRIGHT", referenceFrame, "TOPLEFT", 0, 0)
     elseif position == "TOP" then
         yOffset = -((height * scale) + ADDON.CONTACT_BUTTON_MARGIN)
         container:SetPoint("BOTTOMLEFT", referenceFrame, "TOPLEFT", 0, ADDON.CONTACT_BUTTON_MARGIN)
@@ -55,7 +64,7 @@ function ADDON:UpdateContactContainer(container, settings)
         container:SetPoint("TOPLEFT", referenceFrame, "BOTTOMLEFT", 0, -32 -ADDON.CONTACT_BUTTON_MARGIN)
     elseif position == "RIGHT" then
         extraWidth = width * scale + ADDON.CONTACT_BUTTON_MARGIN
-        container:SetPoint("TOPLEFT", referenceFrame, "TOPRIGHT", ADDON.CONTACT_BUTTON_MARGIN, 2)
+        container:SetPoint("TOPLEFT", referenceFrame, "TOPRIGHT", ADDON.CONTACT_BUTTON_MARGIN, 0)
     end
 
     referenceFrame:SetAttribute("UIPanelLayout-xoffset", xOffset)

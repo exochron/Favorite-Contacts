@@ -1,4 +1,4 @@
-local _, ADDON = ...
+local ADDON_NAME, ADDON = ...
 
 local function SupportBulkMailInbox()
     if BulkMailInbox then
@@ -28,3 +28,15 @@ local function SupportBulkMail()
     end
 end
 ADDON.Events:RegisterCallback('Login', SupportBulkMail, 'bulkmail')
+
+local function SupportMasque()
+    local Masque = LibStub("Masque", true)
+    if Masque then
+        Masque:Group(ADDON_NAME, "Edit Window")
+        Masque:Group(ADDON_NAME, "Mail", "mail")
+        if LE_EXPANSION_LEVEL_CURRENT >= LE_EXPANSION_DRAGONFLIGHT then
+            Masque:Group(ADDON_NAME, "Crafting Order", "craftOrder")
+        end
+    end
+end
+ADDON.Events:RegisterCallback('Login', SupportMasque, 'masque')

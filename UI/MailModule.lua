@@ -8,6 +8,7 @@ local function UpdateContainer()
     ADDON:UpdateContactContainer(container, ADDON.settings)
     ADDON:UpdateContactButtons(container)
 
+    ---- position actual letter frame
     if ADDON.settings.position == "RIGHT" then
         local width = container.frame:GetWidth() * container.frame:GetScale()
         OpenMailFrame:SetPoint("TOPLEFT", InboxFrame, "TOPRIGHT", width + ADDON.CONTACT_BUTTON_MARGIN, 0)
