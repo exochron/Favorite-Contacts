@@ -13,7 +13,7 @@ externals:
 
 ignore:
     - LICENSE
-    - **/*.md
+    - "**/*.md"
     - DevZone
     - Images
     - Libs/*/LICENSE
