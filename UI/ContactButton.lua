@@ -27,7 +27,12 @@ local function CreateContextMenu(_, rootDescription, contextIndex, container)
 end
 
 local function handleContextMenu(button, container)
-    MenuUtil.CreateContextMenu(button, CreateContextMenu, button.index, container)
+    local menuDescription = MenuUtil.CreateRootMenuDescription(MenuVariants.GetDefaultContextMenuMixin())
+
+    Menu.PopulateDescription(CreateContextMenu, button.frame, menuDescription, button.index, container)
+
+    local anchor = CreateAnchor("TOPLEFT", button.frame, "BOTTOMLEFT", 0, 0)
+    Menu.GetManager():OpenMenu(button.frame, menuDescription, anchor)
 end
 
 local function OnContactButtonClicked(button, _, buttonType)
