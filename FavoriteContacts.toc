@@ -1,4 +1,4 @@
-## Interface: 110105,40402,11507
+## Interface: 110105,50500,40402,11507
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox to easily access your favorite contacts
 ## IconTexture: Interface\MailFrame\Mail-Icon
@@ -17,6 +17,7 @@ Settings.lua
 Icons.retail.lua
 Icons.classic.lua
 Icons.cata.lua
+Icons.mop.lua
 UI\AceGUIWidget-FC_CheckedButton.lua
 UI\AceGUIWidget-FC_ContactButton.lua
 UI\Functions.lua

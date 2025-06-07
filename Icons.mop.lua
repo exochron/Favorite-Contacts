@@ -1,9 +1,7 @@
 local _, ADDON = ...
 
--- TODO: remove later after MoP release
-
 -- see: https://warcraft.wiki.gg/wiki/WOW_PROJECT_ID
-if nil == WOW_PROJECT_CATACLYSM_CLASSIC or WOW_PROJECT_ID ~= WOW_PROJECT_CATACLYSM_CLASSIC then
+if nil == WOW_PROJECT_MISTS_CLASSIC or WOW_PROJECT_ID ~= WOW_PROJECT_MISTS_CLASSIC then
     return
 end
 
@@ -11,14 +9,16 @@ ADDON.iconFiles = {
     "INV_Misc_GroupLooking",
 
     -- class
-    "spell_deathknight_classicon", "ClassIcon_Druid", "ClassIcon_Hunter", "ClassIcon_Mage", "ClassIcon_Paladin", "ClassIcon_Priest",
-    "ClassIcon_Rogue", "ClassIcon_Shaman", "ClassIcon_Warlock", "ClassIcon_Warrior",
+    "ClassIcon_DeathKnight", "ClassIcon_Druid", "ClassIcon_Hunter",
+    "ClassIcon_Mage", "ClassIcon_Monk", "ClassIcon_Paladin", "ClassIcon_Priest", "ClassIcon_Rogue", "ClassIcon_Shaman",
+    "ClassIcon_Warlock", "ClassIcon_Warrior",
 
     --specialisations
     "Spell_Deathknight_BloodPresence", "Spell_Deathknight_FrostPresence","Spell_Deathknight_UnholyPresence",
     "Spell_Nature_StarFall","Ability_druid_catform","Ability_racial_bearform","Spell_nature_healingtouch",
     "Ability_hunter_bestialdiscipline","Ability_hunter_focusedaim","Ability_hunter_camouflage",
     "Spell_holy_magicalsentry","Spell_fire_firebolt02","Spell_frost_frostbolt02",
+    "Spell_monk_brewmaster_spec", "Spell_monk_mistweaver_spec", "Spell_monk_windwalker_spec",
     "Spell_holy_holybolt","Ability_paladin_shieldofthetemplar","Spell_holy_auraoflight",
     "Spell_holy_powerwordshield","Spell_holy_guardianspirit","Spell_shadow_shadowwordpain",
     "Ability_rogue_deadlybrew", "Inv_sword_30", "Ability_stealth",
@@ -33,6 +33,7 @@ ADDON.iconFiles = {
     "raceicon-nightelf-female", "raceicon-nightelf-male",
     "raceicon-draenei-female", "raceicon-draenei-male",
     "raceicon-worgen-female", "raceicon-worgen-male",
+    "raceicon-pandaren-female", "raceicon-pandaren-male",
     "raceicon-orc-female", "raceicon-orc-male",
     "raceicon-tauren-female", "raceicon-tauren-male",
     "raceicon-troll-female", "raceicon-troll-male",
@@ -58,6 +59,8 @@ ADDON.iconFiles = {
     "trade_archaeology",
 
     -- faction
+    "ACHIEVEMENT_GUILDPERK_MOBILEBANKING",
     "INV_BannerPVP_01",
     "INV_BannerPVP_02",
+
 }
