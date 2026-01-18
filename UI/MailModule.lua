@@ -62,7 +62,7 @@ ADDON.Events:RegisterCallback('Login', function()
 
         if not container then
             ADDON.Events:TriggerEvent("LoadUI")
-            ADDON.Events:UnregisterEvents({"LoadUI"})
+            ADDON.Events:UnregisterEventsByEventTable({"LoadUI"})
 
             container = ADDON:CreateContactContainer(max(InboxFrame:GetFrameLevel(), SendMailFrame:GetFrameLevel()))
             container.Module = MODULE_NAME

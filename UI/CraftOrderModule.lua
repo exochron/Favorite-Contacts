@@ -15,7 +15,7 @@ local function showContainer()
 
     if not container then
         ADDON.Events:TriggerEvent("LoadUI")
-        ADDON.Events:UnregisterEvents({"LoadUI"})
+        ADDON.Events:UnregisterEventsByEventTable({"LoadUI"})
 
         container = ADDON:CreateContactContainer(ProfessionsCustomerOrdersFrame:GetFrameLevel())
         container.Module = MODULE_NAME
