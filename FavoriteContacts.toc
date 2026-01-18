@@ -1,4 +1,4 @@
-## Interface: 120000,110207,50503,11507
+## Interface: 120000,110207,50503,20505,11508
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox to easily access your favorite contacts
 ## IconTexture: Interface\MailFrame\Mail-Icon
@@ -15,8 +15,9 @@ Locals.lua
 FavoriteContacts.lua
 Settings.lua
 Icons.retail.lua [AllowLoadGameType mainline]
-Icons.classic.lua
-Icons.mop.lua
+Icons.mop.lua [AllowLoadGameType mists]
+Icons.tbc.lua [AllowLoadGameType tbc]
+Icons.classic.lua [AllowLoadGameType vanilla]
 UI\AceGUIWidget-FC_CheckedButton.lua
 UI\AceGUIWidget-FC_ContactButton.lua
 UI\Functions.lua
@@ -26,7 +27,7 @@ UI\ContactButton.lua
 UI\EditPopup.lua
 UI\DragCursor.lua
 UI\MailModule.lua
-UI\CraftOrderModule.lua
+UI\CraftOrderModule.lua [AllowLoadGameType mainline]
 SlashCommand.lua
 AddonCompartment.lua
 SettingsPanel.lua
