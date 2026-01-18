@@ -1,4 +1,4 @@
-## Interface: 110200,50500,11507
+## Interface: 120000,110207,50503,11507
 ## Title: Favorite Contacts
 ## Notes: Adds buttons to mailbox to easily access your favorite contacts
 ## IconTexture: Interface\MailFrame\Mail-Icon
@@ -14,7 +14,7 @@ Libs\AceGUI-3.0\AceGUI-3.0.xml
 Locals.lua
 FavoriteContacts.lua
 Settings.lua
-Icons.retail.lua
+Icons.retail.lua [AllowLoadGameType mainline]
 Icons.classic.lua
 Icons.mop.lua
 UI\AceGUIWidget-FC_CheckedButton.lua

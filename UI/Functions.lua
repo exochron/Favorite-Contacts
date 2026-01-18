@@ -1,7 +1,7 @@
 local ADDON_NAME, ADDON = ...
 
 function ADDON:SetTexture(texture, iconName)
-    if iconName:sub(1, 9) == "raceicon-" then
+    if iconName:sub(1, 8) == "raceicon" then
 
         -- the atlas texture itself has no border. so it looks a bit too sharp.
         -- somehow setting a regular texture beforehand keeps the border of that image for the atlas.
