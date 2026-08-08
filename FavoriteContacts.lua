@@ -6,11 +6,6 @@ local CONFIRM_DELETE_CONTACT = ADDON_NAME .. "_CONFIRM_DELETE_CONTACT"
 ADDON.Events = CreateFromMixins(EventRegistry)
 ADDON.Events:OnLoad()
 ADDON.Events:SetUndefinedEventsAllowed(true)
--- Polyfill for split Unregister behaviour in 12.0
--- Later: remove after classic has it
-if not ADDON.Events.UnregisterEventsByEventTable then
-    ADDON.Events.UnregisterEventsByEventTable = ADDON.Events.UnregisterEvents
-end
 
 local modules = {}
 
