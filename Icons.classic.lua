@@ -1,8 +1,5 @@
 local _, ADDON = ...
 
--- see https://github.com/tomrus88/BlizzardInterfaceCode/blob/classic/Interface/GlueXML/CharacterCreate.lua
--- for new race and class icons
-
 ADDON.iconFiles = {
     -- people - uses plain textures with coordinates
     "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Races,0,0.25,0,0.25", --HUMAN_MALE
