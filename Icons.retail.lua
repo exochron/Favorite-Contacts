@@ -1,8 +1,5 @@
 local _, ADDON = ...
 
--- see https://github.com/tomrus88/BlizzardInterfaceCode/blob/c1e5ba067e4ef6b72a824b57b2d104c65c047a3b/Interface/GlueXML/CharacterCreate.lua
--- for new race and class icons
-
 ADDON.iconFiles = {
     "INV_Misc_GroupLooking",
     "ACHIEVEMENT_GUILDPERK_MOBILEBANKING",
