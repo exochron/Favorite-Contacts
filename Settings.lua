@@ -31,8 +31,8 @@ function ADDON:ResetUISettings()
     ADDON.settings.switchTabOnEmptyInbox = true
 end
 
-local function CombineSettings(settings, defaultSettings)
-    for key, value in pairs(defaultSettings) do
+local function CombineSettings(settings, defaults)
+    for key, value in pairs(defaults) do
         if (settings[key] == nil) then
             settings[key] = value
         elseif (type(value) == "table") and next(value) ~= nil then
@@ -45,27 +45,39 @@ local function CombineSettings(settings, defaultSettings)
 
     -- cleanup old still existing settings
     for key, _ in pairs(settings) do
-        if (defaultSettings[key] == nil) then
+        if (defaults[key] == nil) then
             settings[key] = nil
         end
     end
 end
 
 local function GetForeverRuleset()
-    if C_GameRules.IsGameRuleActive(Enum.GameRule.PvPRuleset) then
-        return "PvP"
-    elseif C_GameRules.IsGameRuleActive(Enum.GameRule.RPRuleset) then
-        return "RP"
-    elseif C_GameRules.IsGameRuleActive(Enum.GameRule.HardcoreRuleset) then
-        return "HC"
+    local name = ""
+    if C_GameRules.IsGameRuleActive(Enum.GameRule.HardcoreRuleset) then
+        name = name.."HC"
     end
-    return "PvE"
+    if C_GameRules.IsGameRuleActive(Enum.GameRule.RPRuleset) then
+        name = name.."RP"
+    end
+    if C_GameRules.IsGameRuleActive(Enum.GameRule.PvPRuleset) then
+        name = name.."PVP"
+    end
+
+    return name or "PVE"
 end
 
 -- During the first 2 weeks of Forever FC still used GetRealmName() as profile name.
 -- At some point that function only returned "". This fix cleans up those shaky profiles.
 -- Later: remove after 2027-05
 local function FixForeverProfiles()
+    if FavoriteContactsSettings["realm_PvE"] then
+        FavoriteContactsSettings["realm_PVE"] = FavoriteContactsSettings["realm_PvE"]
+        FavoriteContactsSettings["realm_PvE"] = nil
+    end
+    if FavoriteContactsSettings["realm_PvP"] then
+        FavoriteContactsSettings["realm_PVP"] = FavoriteContactsSettings["realm_PvP"]
+        FavoriteContactsSettings["realm_PvP"] = nil
+    end
     if FavoriteContactsSettings["realm_"] then
         FavoriteContactsSettings["realm_"] = nil
     end
