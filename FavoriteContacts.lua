@@ -2,6 +2,12 @@ local ADDON_NAME, ADDON = ...
 
 local CONFIRM_DELETE_CONTACT = ADDON_NAME .. "_CONFIRM_DELETE_CONTACT"
 
+-- For debugging purpose. When users post errors, this should get included in the dump.
+ADDON.AddonVersion = C_AddOns.GetAddOnMetadata(ADDON_NAME, "Version")
+ADDON.ClientVersion = GetBuildInfo()
+ADDON.ClientLocale = GetLocale()
+ADDON.ClientRegion = GetCurrentRegionName()
+
 -- see: https://www.townlong-yak.com/framexml/live/CallbackRegistry.lua
 ADDON.Events = CreateFromMixins(EventRegistry)
 ADDON.Events:OnLoad()
