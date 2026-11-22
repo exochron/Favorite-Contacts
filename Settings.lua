@@ -63,7 +63,7 @@ local function GetForeverRuleset()
         name = name.."PVP"
     end
 
-    return name or "PVE"
+    return "" == name and "PVE" or name
 end
 
 -- During the first 2 weeks of Forever FC still used GetRealmName() as profile name.
